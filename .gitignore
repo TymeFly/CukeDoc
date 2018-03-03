@@ -1,0 +1,35 @@
+## java files
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+## Build tools
+target/
+
+
+## IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
+.classpath
+.project
+.checkstyle
+.settings/*
+*/.settings/*
+
+
+# Misc
+*.old
+*.rdr
+*.log
+*.tmp
+tmp.*
+*.sh
+

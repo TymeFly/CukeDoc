@@ -1,0 +1,247 @@
+body {
+  color: #353833;
+  font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+#header, #footer {
+  border-radius: 25px;
+  background-color: #4D7A97;
+  color: #FFFFFF;
+  clear: right;
+  height: 3em;
+  padding: 6px 10px 0px 10px;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+#footer {
+  margin-right: 40px;
+}
+
+#docBody {
+  padding-left: 25px;
+  padding-right: 40px;
+}
+
+#menu {
+  float : right;
+  padding-right:20px;
+  padding-top: 6px;
+}
+
+.menuItem a {
+  color : #c1c1c1;f
+  text-decoration: none;
+}
+
+.menuItemText {
+  color : #c1c1c1;
+  font-size: 12px;
+  text-decoration: none;
+  padding-left: 10px;
+}
+
+.menuItem a:hover {
+  color : #F4846E;
+}
+
+.pageTop {
+  color : black
+  padding-left : 20px;
+  margin-bottom : 10px;
+  padding-bottom : 3px;
+  border-bottom : 3px solid #4D7A97;
+}
+
+.pageBottom {
+  color : black
+  padding-left : 20px;
+  margin-top : 10px;
+  margin-right: 40px;
+  padding-top : 3px;
+  border-top : 3px solid #4D7A97;
+}
+
+.notes {
+  color : black
+  padding-left : 20px;
+  margin-top : 10px;
+  margin-right: 40px;
+  padding-top : 3px;
+}
+
+.headerTitle {
+  float : left;
+  padding-left:20px;
+  padding-top: 2px;
+  font-size: 20px;
+}
+
+.customFooter {
+  float : left;
+  padding-left:20px;
+  padding-top: 5px;
+  font-size: 16px;
+}
+
+#scrollUp {
+  position: fixed;
+  bottom: 10px;
+  right : 10px;
+  width : 30px;
+  height : 35px;
+  background-image : url("../up.png");
+  display : none;
+}
+
+#scrollUp:hover {
+  background-image : url("../up-hover.png");
+}
+
+#buildDate {
+  float : right;
+  padding: 8px 10px 0px 10px;
+}
+
+.descriptionContainer {
+  padding-left: 20px;
+}
+
+.contentContainer {
+  background-color : #f9f9f9;
+  padding :0px 10px 0px 10px;
+  margin-top : 10px;
+  margin-bottom : 10px;
+}
+
+.contentContainer table {
+  border-spacing: 2px;
+  text-indent: 10px;
+  border-collapse: collapse;
+  width: 100%;
+  padding-top: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.contentContainer table caption {
+  position:relative;
+  text-align:left;
+  background-repeat:no-repeat;
+  color: #FFFFFF;
+  background-color: #4D7A97;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-weight:bold;
+  white-space: nowrap;
+  padding : 5px 12px 7px 2px;
+  display: inline-block;
+  float: left;
+  border: none;
+  margin-left : 10px;
+}
+
+.contentContainer table caption:hover {
+  color : #F4846E;
+}
+
+.contentContainer table caption.activeTab {
+  padding-top : 12px;
+  height: 25px;
+  padding-bottom : 0px;
+}
+
+.contentContainer table caption:not(.activeTab) {
+  margin-top : 8px;
+}
+
+.contentContainer table caption.activeTab a {
+  color : #F4846E;
+  text-decoration : none;
+}
+
+.contentContainer table caption:not(.activeTab) a {
+  text-decoration : none;
+  color: white;
+}
+
+.contentContainer tbody {
+    border-collapse: collapse;
+    border: 3px solid #f0f0f0;
+}
+
+.contentContainer th {
+  text-align: left;
+  background-color: #d0d0d0;
+  border-top: 3px solid #d0d0d0;
+  border-left: 3px solid #d0d0d0;
+  border-right: 3px solid #d0d0d0;
+}
+
+tr:nth-child(odd) {
+  background-color: #f0f0f0;
+}
+
+.summaryTypes .colTypes {
+  width: 25%;
+  vertical-align: top;
+}
+
+.summaryMapping .colMappings {
+  width: 75%;
+  vertical-align: top;
+}
+
+.contentBody {
+  color : #4a6782;
+  text-decoration: none;
+}
+
+.contentBody * {
+  color : #4a6782;
+  font-size: 17px;
+}
+
+.contentBody a {
+  text-decoration: none;
+}
+
+.contentBody a:hover, .contentBody a:hover b, .contentBody a:hover i {
+  color : #F4846E;
+}
+
+.implementationDetail {
+  padding-bottom : 2px;
+}
+
+.implementationTitle {
+  color: #FFFFFF;
+  background-color: #4D7A97;
+  border-color : #d0d9e0;
+  border-style : solid;
+  border-width : 1px;
+  font-size: 17px;
+  font-size : 17px;
+  line-height : 20px;
+  border-radius: 15px;
+  margin : 25px 0px 6px 0px;
+  padding : 7px 5px 7px 15px;
+}
+
+.elementSubtitle {
+  color : #4e4e4e;
+  font-size : 15px;
+  font-weight : bold;
+  margin-top : 15px;
+  margin-bottom : 5px;
+}
+
+.elementDescription {
+  padding-left : 20px;
+}
+
+.implementationElement ul, .implementationElement ol {
+  margin-top : 5px;
+}
+
