@@ -9,13 +9,13 @@ import javax.annotation.Nonnull;
 /**
  * Used to create a page of information to help the user
  */
-public class ManualPage implements PageBuilder, OptionBuilder {
+public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
     private static class Description {
         private static int maxCommandLine = 0;
 
         private String name;
         private String separator = "";
-        private String description = "";
+        private List<String> description = new ArrayList<>();
 
         Description(@Nonnull String commandLine) {
             this.name = commandLine;
@@ -29,7 +29,7 @@ public class ManualPage implements PageBuilder, OptionBuilder {
         }
 
         void addDescription(@Nonnull String description) {
-            this.description = description;
+            this.description.add(description);
         }
     }
 
@@ -55,7 +55,7 @@ public class ManualPage implements PageBuilder, OptionBuilder {
      * @return          A flowing interface
      */
     @Nonnull
-    public static PageBuilder create(@Nonnull String title) {
+    public static InitialBuilder create(@Nonnull String title) {
         return new ManualPage(title);
     }
 
@@ -116,10 +116,33 @@ public class ManualPage implements PageBuilder, OptionBuilder {
             builder.append(INDENT)
                    .append(d.name)
                    .append(align, 0, (align.length - d.name.length()))
-                   .append(d.description)
+                   .append(buildDescription(d, align))
                    .append(EOL);
         }
 
         return builder.toString();
+    }
+
+
+    @Nonnull
+    private StringBuilder buildDescription(@Nonnull Description description, char[] align) {
+        List<String> lines = description.description;
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+
+        for (String line : lines) {
+            if (first) {
+                first = false;
+            } else {
+                builder.append(EOL)
+                       .append(INDENT)
+                       .append(INDENT)
+                       .append(align);
+            }
+
+            builder.append(line);
+        }
+
+        return builder;
     }
 }

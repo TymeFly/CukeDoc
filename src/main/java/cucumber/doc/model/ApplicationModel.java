@@ -18,6 +18,7 @@ public class ApplicationModel {
      */
     public static class Builder {
         private List<TypeModel> types = new ArrayList<>();
+        private List<String> notes = new ArrayList<>();
 
 
         /**
@@ -43,11 +44,21 @@ public class ApplicationModel {
         public ApplicationModel build() {
             return new ApplicationModel(this);
         }
+
+
+        /**
+         * Add a new set of notes to the application
+         * @param notes     human readable text
+         */
+        public void addNote(@Nonnull String notes) {
+            this.notes.add(notes);
+        }
     }
 
 
     private final List<TypeModel> types;
     private final List<MappingModel> mappings;
+    private final List<String> notes;
 
 
     private ApplicationModel(@Nonnull Builder builder) {
@@ -70,6 +81,7 @@ public class ApplicationModel {
 
         this.mappings = Collections.unmodifiableList(mappings);
         this.types = Collections.unmodifiableList(types);
+        this.notes = Collections.unmodifiableList(builder.notes);
     }
 
 
@@ -90,5 +102,15 @@ public class ApplicationModel {
     @Nonnull
     public List<MappingModel> getMappings() {
         return mappings;
+    }
+
+
+    /**
+     * Returns all of the notes applied to this application in the order they were generated
+     * @return all of the notes applied to this application in the order they were generated
+     */
+    @Nonnull
+    public List<String> getNotes() {
+        return notes;
     }
 }

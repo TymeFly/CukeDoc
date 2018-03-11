@@ -1,5 +1,5 @@
 
-package cucumber.doc.generate;
+package cucumber.doc.parse;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +25,7 @@ import org.xml.sax.SAXException;
 /**
  * Import the configuration from an XML document
  */
-public class ImportXml {
-
+class ImportXml {
     /**
      * Import settings from an XML document
      * @param builder           builder to import settings into
@@ -37,7 +36,7 @@ public class ImportXml {
             Document document = getDocument(filePath);
             Element element = document.getDocumentElement();
 
-            processApplication(builder, element);
+            importApplication(builder, element);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             throw new CukeDocException("Malformed XML", e);
         }
@@ -58,16 +57,38 @@ public class ImportXml {
     }
 
 
-    private void processApplication(@Nonnull ApplicationModel.Builder builder, @Nonnull Element element) {
-        for (Element type : getChildren(element, "type")) {
-            TypeModel typeModel = processType(type);
+    private void importApplication(@Nonnull ApplicationModel.Builder builder, @Nonnull Element element) {
+        importNotes(builder, element);
+        importTypes(builder, element);
+    }
+
+
+    private void importNotes(@Nonnull ApplicationModel.Builder builder, @Nonnull Element element) {
+        Element notes = getOptionalChild(element, "notes");
+
+        if (notes != null) {
+            for (Element child : getChildren(notes, "note")) {
+                String note = child.getTextContent();
+
+                builder.addNote(note);
+            }
+        }
+    }
+
+
+    private void importTypes(@Nonnull ApplicationModel.Builder builder, @Nonnull Element element) {
+        Element types = getChild(element, "types");
+
+        for (Element type : getChildren(types, "type")) {
+            TypeModel typeModel = importType(type);
+
             builder.withType(typeModel);
         }
     }
 
 
     @Nonnull
-    private TypeModel processType(@Nonnull Element element) {
+    private TypeModel importType(@Nonnull Element element) {
         String name = readChild(element, "name");
         String description = readOptionalChild(element, "description");
         String since = readOptionalChild(element, "since");
@@ -82,7 +103,7 @@ public class ImportXml {
         }
 
         for (Element type : getChildren(element, "implementation")) {
-            ImplementationModel implementation = processImplementation(type);
+            ImplementationModel implementation = importImplementation(type);
             builder.withImplementation(implementation);
         }
 
@@ -91,7 +112,7 @@ public class ImportXml {
 
 
     @Nonnull
-    private ImplementationModel processImplementation(@Nonnull Element element) {
+    private ImplementationModel importImplementation(@Nonnull Element element) {
         String name = readChild(element, "name");
         String description = readOptionalChild(element, "description");
         String since = readOptionalChild(element, "since");
@@ -107,22 +128,22 @@ public class ImportXml {
         }
 
         if (table != null) {
-            processTable(table, builder);
+            importTable(table, builder);
         }
 
         for (Element parameter : getChildren(element, "parameter")) {
-            processParameter(parameter, builder);
+            importParameter(parameter, builder);
         }
 
         for (Element mapping : getChildren(element, "mapping")) {
-            processMapping(mapping, builder);
+            importMapping(mapping, builder);
         }
 
         return builder.build();
     }
 
 
-    private void processTable(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
+    private void importTable(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
         String name = readChild(element, "name");
         String description = readChild(element, "description");
 
@@ -130,7 +151,7 @@ public class ImportXml {
     }
 
 
-    private void processParameter(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
+    private void importParameter(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
         String name = readChild(element, "name");
         String type = readChild(element, "type");
         String format = readChild(element, "format");
@@ -140,7 +161,7 @@ public class ImportXml {
     }
 
 
-    private void processMapping(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
+    private void importMapping(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
         String verb = readChild(element, "verb");
         String regEx = readChild(element, "regEx");
 
@@ -150,8 +171,8 @@ public class ImportXml {
 
     @Nonnull
     private List<Element> getChildren(@Nonnull Element element, @Nonnull String name) {
-        Node child = element.getFirstChild();
         List<Element> children = new ArrayList<>();
+        Node child = element.getFirstChild();
 
         while (child != null) {
             String nodeName = child.getNodeName();
@@ -167,6 +188,18 @@ public class ImportXml {
     }
 
 
+    @Nonnull
+    private Element getChild(@Nonnull Element element, @Nonnull String name) {
+        Element child = getOptionalChild(element, name);
+
+        if (child == null) {
+            throw new CukeDocException("Malformed XML: Missing '%s' element", name);
+        }
+
+        return child;
+    }
+
+
     @Nullable
     private Element getOptionalChild(@Nonnull Element element, @Nonnull String name) {
         List<Element> children = getChildren(element, name);
@@ -177,7 +210,7 @@ public class ImportXml {
         } else if (children.size() == 1) {
             child = children.get(0);
         } else {
-            throw new CukeDocException("Malformed XML: Duplicate '%s' nodes", name);
+            throw new CukeDocException("Malformed XML: Duplicate '%s' element", name);
         }
 
         return child;
@@ -189,7 +222,7 @@ public class ImportXml {
         String child = readOptionalChild(element, name);
 
         if (child == null) {
-            throw new CukeDocException("Malformed XML: Missing node '%s'", name);
+            throw new CukeDocException("Malformed XML: Missing element '%s'", name);
         }
 
         return child;
@@ -206,7 +239,7 @@ public class ImportXml {
         } else if (children.size() == 1) {
             content = children.get(0).getTextContent();
         } else {
-            throw new CukeDocException("Malformed XML: Duplicate node for '%s'", name);
+            throw new CukeDocException("Malformed XML: Duplicate element for '%s'", name);
         }
 
         return content;

@@ -2,6 +2,7 @@ package cucumber.doc.config;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Config {
     private I18n i18n = I18n.EN;
     private boolean trace = false;
     private boolean configured = false;
-    private String notesPath;
+    private List<String> notesPath = new ArrayList<>();
 
 
     /** Hide singleton constructor */
@@ -143,7 +144,7 @@ public class Config {
                 iconPath = value;
                 valid &= validatePath(key, value, reporter);
             } else if ("-notes".equals(key)) {
-                notesPath = value;
+                notesPath.add(value);
                 valid &= validatePath(key, value, reporter);
             } else {
                 // ignore unexpected option
@@ -178,6 +179,7 @@ public class Config {
                     .withArgument("path")
                     .withDescription("Path to an XML report from another project." +
                                         " The details will be added to this project")
+                    .withDescription("Multiple links can be added")
                 .withOptions("-windowtitle")
                     .withArgument("text")
                     .withDescription("Browser window title for the documentation")
@@ -202,6 +204,7 @@ public class Config {
                 .withOptions("-notes")
                     .withArgument("path")
                     .withDescription("Optional set of notes that will be included in the report")
+                    .withDescription("Multiple sets of notes can be added")
                 .withOptions("-description")
                     .withArgument("path")
                     .withDescription("Add a description to the Overview page")
@@ -229,7 +232,7 @@ public class Config {
      * @return a list of XML documents to be included in the generated report
      */
     @Nonnull
-    public List<String> getXmlList() {
+    public Collection<String> getLinks() {
         Preconditions.checkState(configured, "Config options have not been applied");
 
         return Collections.unmodifiableList(xmlList);
@@ -321,11 +324,12 @@ public class Config {
 
 
     /**
-     * Returns a path to a text file that contains notes for the harness; or {@code null} if no such page exists
-     * @return a path to a text file that contains notes for the harness
+     * Returns a paths to a text files that contains notes for the harness;.
+     *  An empty list indicates no notes were requested
+     * @return a paths to a text files that contains notes for the harness
      */
-    @Nullable
-    public String getNotesPath() {
+    @Nonnull
+    public Collection<String> getNotesPath() {
         Preconditions.checkState(configured, "Config options have not been applied");
 
         return notesPath;

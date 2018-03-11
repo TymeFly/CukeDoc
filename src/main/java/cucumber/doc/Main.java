@@ -9,8 +9,8 @@ import javax.annotation.Nonnull;
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.RootDoc;
 import cucumber.doc.config.Config;
-import cucumber.doc.generate.Generator;
 import cucumber.doc.model.ApplicationModel;
+import cucumber.doc.parse.ModelBuilder;
 import cucumber.doc.report.Format;
 import cucumber.doc.util.FileUtils;
 import cucumber.doc.util.Trace;
@@ -77,7 +77,7 @@ public class Main {
      * @return          {@code true} only if this was completed successfully
      */
     public static boolean start(@Nonnull RootDoc root) {
-        ApplicationModel results = new Generator(root).generate();
+        ApplicationModel model = new ModelBuilder(root).build();
         Config config = Config.getInstance();
         String targetDirectory = config.getDirectory();
 
@@ -86,7 +86,7 @@ public class Main {
         for (Format reportType : config.getFormats()) {
             Trace.message("Creating report %s", reportType);
 
-            reportType.getReportBuilder().writeReport(results);
+            reportType.getReportBuilder(model).writeReport();
         }
 
         return true;

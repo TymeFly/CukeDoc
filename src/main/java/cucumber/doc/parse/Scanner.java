@@ -1,4 +1,4 @@
-package cucumber.doc.generate;
+package cucumber.doc.parse;
 
 import java.net.URL;
 import java.util.HashMap;

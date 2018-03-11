@@ -1,6 +1,7 @@
 package cucumber.doc.report.xml;
 
 import java.io.File;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,20 +36,19 @@ import org.w3c.dom.Text;
  * A report builder for pages of XML
  */
 public class XmlReport implements ReportBuilder {
-
-    // https://www.journaldev.com/898/read-xml-file-java-dom-parser
-    // https://www.journaldev.com/1112/how-to-write-xml-file-in-java-dom-parser
-    // https://www.journaldev.com/71/java-xml-formatter-document-xml
+    private final ApplicationModel model;
 
     /**
      * Create a Report for pages of HTML
+     * @param model         application model
      */
-    public XmlReport() {
+    public XmlReport(@Nonnull ApplicationModel model) {
+        this.model = model;
     }
 
 
     @Override
-    public void writeReport(@Nonnull ApplicationModel model) {
+    public void writeReport() {
         String target = Config.getInstance().getDirectory() + "/cuke-doc.xml";
 
         try {
@@ -93,9 +93,34 @@ public class XmlReport implements ReportBuilder {
         Element element = document.createElement("cuke-doc");
         document.appendChild(element);
 
+        processNotes(document, element, model);
+        processTypes(document, element, model);
+    }
+
+
+    private void processNotes(@Nonnull Document document, @Nonnull Element parent, @Nonnull ApplicationModel model) {
+        List<String> notes = model.getNotes();
+
+        if (!notes.isEmpty()) {
+            Element element = document.createElement("notes");
+
+            for (String note : notes) {
+                addNode(document, element, "note", note);
+            }
+
+            parent.appendChild(element);
+        }
+    }
+
+
+    private void processTypes(@Nonnull Document document, @Nonnull Element parent, @Nonnull ApplicationModel model) {
+        Element element = document.createElement("types");
+
         for (TypeModel type : model.getTypes()) {
             processType(document, element, type);
         }
+
+        parent.appendChild(element);
     }
 
 

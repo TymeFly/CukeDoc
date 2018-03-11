@@ -20,31 +20,44 @@ public class BasicReport implements ReportBuilder {
     private static final String EOL = System.lineSeparator();
     private static final String INDENT = "    ";
 
+    private final ApplicationModel model;
+
+    /**
+     * Create a basic text report
+     * @param model         application model
+     */
+    public BasicReport(@Nonnull ApplicationModel model) {
+        this.model = model;
+    }
+
 
     @Override
-    public void writeReport(@Nonnull ApplicationModel results) {
+    public void writeReport() {
         String target = Config.getInstance().getDirectory() + "/mappings.txt";
-        String report = generatedReport(results.getTypes());
+        String report = generatedReport();
 
         FileUtils.delete(target);
         FileUtils.write(target, report);
     }
 
+
     @Nonnull
-    private String generatedReport(@Nonnull List<TypeModel> results) {
+    private String generatedReport() {
         StringBuilder builder = new StringBuilder();
 
         builder.append(INDENT).append(INDENT)
                .append("--==| ").append(Config.getInstance().getTitle()).append(" |==--")
                .append(EOL).append(EOL);
-        describeMappings(builder, results);
+        describeMappings(builder);
         addNotes(builder);
 
         return builder.toString();
     }
 
 
-    private void describeMappings(@Nonnull StringBuilder builder, @Nonnull List<TypeModel> results) {
+    private void describeMappings(@Nonnull StringBuilder builder) {
+        List<TypeModel> results = model.getTypes();
+
         for (TypeModel type : results) {
             builder.append(type.getSimpleName()).append(':').append(EOL);
 
@@ -65,15 +78,17 @@ public class BasicReport implements ReportBuilder {
 
 
     private void addNotes(@Nonnull StringBuilder builder) {
-        String notesPath = Config.getInstance().getNotesPath();
+        List<String> notes = model.getNotes();
 
-        if (notesPath != null) {
-            String notes = FileUtils.read(notesPath);
-
+        if (!notes.isEmpty()) {
             builder.append("--==| Notes |==--")
-                   .append(EOL).append(EOL)
-                   .append(notes)
                    .append(EOL);
+
+            for (String note : notes) {
+                builder.append(EOL)
+                       .append(note)
+                       .append(EOL);
+            }
         }
     }
 }

@@ -48,30 +48,33 @@ import static j2html.TagCreator.title;
  */
 public class HtmlReport implements ReportBuilder {
     private final Date buildDate;
+    private final ApplicationModel model;
 
     /**
      * Create a Report for pages of HTML
+     * @param model         application model
      */
-    public HtmlReport() {
+    public HtmlReport(@Nonnull ApplicationModel model) {
         LocalDateTime localDateTime = LocalDateTime.now();
         ZoneOffset zone = OffsetDateTime.now().getOffset();
 
+        this.model = model;
         buildDate = Date.from(localDateTime.toInstant(zone));
     }
 
 
     @Override
-    public void writeReport(@Nonnull ApplicationModel model) {
-        buildClasses(model);
+    public void writeReport() {
+        buildClasses();
         writePage(new OverviewPageBuilder(model), Translate.message(LanguageKey.OVERVIEW_TITLE), "index.html");
-        writePage(new NotesPageBuilder(), Translate.message(LanguageKey.OVERVIEW_TITLE), "notes.html");
+        writePage(new NotesPageBuilder(model), Translate.message(LanguageKey.NOTES_TITLE), "notes.html");
 
         copyResources();
     }
 
 
-    private void buildClasses(@Nonnull ApplicationModel app) {
-        for (TypeModel type : app.getTypes()) {
+    private void buildClasses() {
+        for (TypeModel type : model.getTypes()) {
             writePage(new TypePageBuilder(type),
                       type.getFriendlyName(),
                       type.getQualifiedName() + ".html");
@@ -153,13 +156,14 @@ public class HtmlReport implements ReportBuilder {
 
 
     @Nonnull
-    private DomContent cukeDocHeader(@Nonnull String title, @Nonnull EnumSet<MenuItem> menu) {
+    private DomContent cukeDocHeader(@Nonnull String title,
+                                     @Nonnull EnumSet<MenuItem> menu) {
         return
             header(
               span(title).withClass("headerTitle"),
               div(
                 each(Arrays.asList(MenuItem.values()), item ->
-                  iffElse(item.isAvailable(),
+                  iffElse(item.isAvailable(model),
                     span(
                       iffElse((menu.contains(item)),
                         a(Translate.message(item.getKey())).withHref(item.getHref()).withClass("menuItemText"),

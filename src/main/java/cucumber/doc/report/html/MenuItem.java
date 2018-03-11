@@ -2,8 +2,8 @@ package cucumber.doc.report.html;
 
 import javax.annotation.Nonnull;
 
-import cucumber.doc.config.Config;
 import cucumber.doc.config.LanguageKey;
+import cucumber.doc.model.ApplicationModel;
 
 /**
  * Enumeration of links that appear in the menu at the top of each page.
@@ -16,8 +16,8 @@ enum MenuItem {
     /** Menu item for a link to the root of this site */
     NOTES(LanguageKey.NOTES_TITLE, "notes.html") {
         @Override
-        public boolean isAvailable() {
-            return (Config.getInstance().getNotesPath() != null);
+        public boolean isAvailable(@Nonnull ApplicationModel model) {
+            return (!model.getNotes().isEmpty());
         }
     },
 
@@ -55,9 +55,10 @@ enum MenuItem {
 
     /**
      * Returns {@code true} only if this menu item should be displayed
+     * @param model         application model
      * @return {@code true} only if this menu item should be displayed; else [@code false}
      */
-    public boolean isAvailable() {
+    public boolean isAvailable(@Nonnull ApplicationModel model) {
         return true;
     }
 }
