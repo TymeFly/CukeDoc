@@ -12,7 +12,7 @@ public class HtmlUtilsTest {
      * Unit test {@link HtmlUtils#cleanDescription}
      */
     @Test
-    public void testCleanDescription() {
+    public void test_cleanDescription() {
         Assert.assertEquals("null", null, HtmlUtils.cleanDescription(null));
         Assert.assertEquals("Empty Description", "", HtmlUtils.cleanDescription(""));
         Assert.assertEquals("No Change required", "Hello world.", HtmlUtils.cleanDescription("Hello world."));
