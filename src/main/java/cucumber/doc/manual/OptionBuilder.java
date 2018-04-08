@@ -1,4 +1,4 @@
-package cucumber.doc.info;
+package cucumber.doc.manual;
 
 import javax.annotation.Nonnull;
 

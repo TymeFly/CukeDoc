@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.sun.javadoc.DocErrorReporter;
-import cucumber.doc.info.ManualPage;
+import cucumber.doc.manual.ManualPage;
 import cucumber.doc.report.Format;
 import cucumber.doc.util.EnumUtils;
 import cucumber.doc.util.FileUtils;

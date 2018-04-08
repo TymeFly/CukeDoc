@@ -1,4 +1,4 @@
-package cucumber.doc.info;
+package cucumber.doc.manual;
 
 import java.util.ArrayList;
 import java.util.Arrays;
