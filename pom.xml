@@ -4,7 +4,7 @@
 
     <groupId>com.cucumber</groupId>
     <artifactId>cuke-doc</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>cuke-doc</name>
 
     <properties>
@@ -55,6 +55,13 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
+            <version>1.17.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
