@@ -12,6 +12,14 @@ public class ParameterModel extends AbstractParameterModel {
     private final String format;
     private final String friendlyFormat;
 
+
+    /**
+     * Constructor
+     * @param name              the name of this parameter as seen in the Java code
+     * @param type              type of the parameter as it appears in the implementing method signature
+     * @param format            format of the parameter exactly as it appears in the regEx capture group
+     * @param description       Description of the parameter from the comments
+     */
     ParameterModel(@Nonnull String name, @Nonnull String type, @Nonnull String format, @Nonnull String description) {
         super(name, description);
 

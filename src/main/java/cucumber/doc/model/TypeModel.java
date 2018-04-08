@@ -1,6 +1,7 @@
 package cucumber.doc.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class TypeModel {
     /**
      * Builder for TypeModel implementations
      */
-    public static class Builder implements DescriptionModelBuilder {
+    public static class Builder implements DescriptionModelBuilder<Builder> {
         private final String qualifiedName;
         private final String simpleName;
         private final List<ImplementationModel> implementations = new ArrayList<>();
@@ -55,34 +56,47 @@ public class TypeModel {
         /**
          * Add a mapping implementation to this type
          * @param implementation        Configured implementation
+         * @return                      A flowing interface
          */
-        public void withImplementation(@Nonnull ImplementationModel implementation) {
+        @Nonnull
+        public Builder withImplementation(@Nonnull ImplementationModel implementation) {
             Preconditions.checkNotNull(implementation, "Invalid implementation definition");
 
             implementations.add(implementation);
+
+            return this;
         }
 
 
-         /**
+        /**
          * Add an optional description to the type
          * @param description       description as seen in the Java source code.
+         * @return                  A flowing interface
          */
         @Override
-        public void withDescription(@Nonnull String description) {
+        @Nonnull
+        public Builder withDescription(@Nonnull String description) {
             Preconditions.checkNotNull(description, "Invalid type description");
 
             this.description = description;
+
+            return this;
         }
 
 
         /**
          * Add the optional version indicating when this type was introduced
          * @param version     a version number
+         * @return            A flowing interface
          */
-        public void since(@Nonnull String version) {
+        @Override
+        @Nonnull
+        public Builder since(@Nonnull String version) {
             Preconditions.checkNotNull(version, "Invalid type version");
 
             this.version = version;
+
+            return this;
         }
 
 
@@ -107,19 +121,24 @@ public class TypeModel {
     private ApplicationModel application;
 
 
-    TypeModel(@Nonnull Builder builder) {
+    private TypeModel(@Nonnull Builder builder) {
+        List<ImplementationModel> implementations = new ArrayList<>(builder.implementations);
+
+        implementations.sort(Comparator.comparing(ImplementationModel::getName));
+
         this.qualifiedName = builder.qualifiedName;
         this.simpleName = builder.simpleName;
         this.friendlyName = Friendly.name(builder.simpleName);
         this.description = Friendly.description(builder.description);
         this.summary = (description == null ? null : StringUtils.firstSentence(description));
         this.version = builder.version;
-        this.implementations = new ArrayList<>(builder.implementations);
+        this.implementations = Collections.unmodifiableList(implementations);
     }
 
 
 
-    void initialise(@Nonnull ApplicationModel application) {
+    @Nonnull
+    TypeModel initialise(@Nonnull ApplicationModel application) {
         Preconditions.checkState((this.application == null), "%s has already been initialised", this);
 
         this.application = application;
@@ -128,7 +147,7 @@ public class TypeModel {
             implementation.initialise(this);
         }
 
-        implementations.sort(Comparator.comparing(ImplementationModel::getQualifiedName));
+        return this;
     }
 
 

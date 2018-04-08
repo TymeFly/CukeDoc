@@ -51,7 +51,7 @@ public class ModelBuilder {
     private void addNotes(@Nonnull ApplicationModel.Builder builder) {
         for (String notesPath : Config.getInstance().getNotesPath()) {
             String notes = FileUtils.read(notesPath);
-            builder.addNote(notes);
+            builder.withNote(notes);
         }
     }
 }

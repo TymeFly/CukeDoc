@@ -81,7 +81,7 @@ public class MappingModel {
      */
     @Nonnull
     public String getAnnotationText() {
-        return "(\"" + regEx + ")\"";
+        return "(\"" + regEx + "\")";
     }
 
 

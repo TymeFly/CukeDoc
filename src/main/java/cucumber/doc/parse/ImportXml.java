@@ -70,7 +70,7 @@ class ImportXml {
             for (Element child : getChildren(notes, "note")) {
                 String note = child.getTextContent();
 
-                builder.addNote(note);
+                builder.withNote(note);
             }
         }
     }

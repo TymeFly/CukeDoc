@@ -37,21 +37,24 @@ public class ApplicationModel {
 
 
         /**
+         * Add a new set of notes to the application
+         * @param notes     human readable text
+         */
+        @Nonnull
+        public Builder withNote(@Nonnull String notes) {
+            this.notes.add(notes);
+
+            return this;
+        }
+
+
+        /**
          * Build an ApplicationModel
          * @return an ApplicationModel
          */
         @Nonnull
         public ApplicationModel build() {
             return new ApplicationModel(this);
-        }
-
-
-        /**
-         * Add a new set of notes to the application
-         * @param notes     human readable text
-         */
-        public void addNote(@Nonnull String notes) {
-            this.notes.add(notes);
         }
     }
 
@@ -106,8 +109,8 @@ public class ApplicationModel {
 
 
     /**
-     * Returns all of the notes applied to this application in the order they were generated
-     * @return all of the notes applied to this application in the order they were generated
+     * Returns all of the notes applied to this application in the order they were added
+     * @return all of the notes applied to this application in the order they were added
      */
     @Nonnull
     public List<String> getNotes() {

@@ -18,7 +18,7 @@ public class ImplementationModel {
     /**
      * Builder for Implementation models
      */
-    public static class Builder implements DescriptionModelBuilder {
+    public static class Builder implements DescriptionModelBuilder<Builder> {
         private final String implementationName;
         private String description;
         private String version;
@@ -38,43 +38,55 @@ public class ImplementationModel {
 
 
         /**
-         * Add a mapping to this implementation
+         * Add a mapping to this implementation. Multiple mappings may be applied
          * @param verb      the cucumber annotation verb
          * @param regEx     the mapping exactly as it appears in the Java code
+         * @return          A flowing interface
          */
-        public void withMapping(@Nonnull String verb, @Nonnull String regEx) {
+        @Nonnull
+        public Builder withMapping(@Nonnull String verb, @Nonnull String regEx) {
             Preconditions.checkNotNull(verb, "Invalid method verb");
             Preconditions.checkNotNull(regEx, "Invalid method regEx");
 
             MappingModel mapping = new MappingModel(verb, regEx);
 
             mappings.add(mapping);
+
+            return this;
         }
 
 
         /**
-         * Add an optional description to the implementation
+         * Add an optional description to the implementation. An implementation may have at most one description.
          * @param description       description as seen in the Java source code.
+         * @return                  A flowing interface
          */
         @Override
-        public void withDescription(@Nonnull String description) {
+        @Nonnull
+        public Builder withDescription(@Nonnull String description) {
             Preconditions.checkNotNull(description, "Invalid method description");
+            Preconditions.checkArgument((this.description == null),
+                                        "Multiple description defined for a single implementation");
 
             this.description = description;
+
+            return this;
         }
 
 
         /**
-         * Add a single parameter (capture group) to the implemetation
+         * Add a single parameter (capture group) to the implemetation. Multiple parameters may be applied
          * @param name          name of the parameter
          * @param type          Java type of the parameter
          * @param format        Format of the parameter (the capture group text)
          * @param description   A description of the parameter
+         * @return              A flowing interface
          */
-        public void withParameter(@Nonnull String name,
-                                  @Nonnull String type,
-                                  @Nonnull String format,
-                                  @Nonnull String description) {
+        @Nonnull
+        public Builder withParameter(@Nonnull String name,
+                                     @Nonnull String type,
+                                     @Nonnull String format,
+                                     @Nonnull String description) {
             Preconditions.checkNotNull(description, "Invalid parameter description");
 
             ParameterModel parameter = new ParameterModel(name, type, format, description);
@@ -84,27 +96,37 @@ public class ImplementationModel {
             }
 
             parameters.add(parameter);
+
+            return this;
         }
 
 
         /**
-         * Add an optional table definition to this implementation
+         * Add an optional table definition to this implementation.An implementation may have at most one table.
          * @param name              name of the table
          * @param description       description of the table
+         * @return                  A flowing interface
          */
-        public void withTable(@Nonnull String name, @Nonnull String description) {
+        @Nonnull
+        public Builder withTable(@Nonnull String name, @Nonnull String description) {
             Preconditions.checkArgument((table == null), "Multiples tables defined for a single implementation");
 
             table = new TableModel(name, description);
+
+            return this;
         }
 
 
         /**
          * Add the optional version indicating when this implementation was introduced
-         * @param version     a version number
+         * @param version   a version number
+         * @return          A flowing interface
          */
-        public void since(@Nonnull String version) {
+        @Nonnull
+        public Builder since(@Nonnull String version) {
             this.version = version;
+
+            return this;
         }
 
 
@@ -157,7 +179,8 @@ public class ImplementationModel {
     }
 
 
-    void initialise(@Nonnull TypeModel parent) {
+    @Nonnull
+    ImplementationModel initialise(@Nonnull TypeModel parent) {
         Preconditions.checkState((this.parent == null), "%s has already been initialised", this);
 
         this.parent = parent;
@@ -165,6 +188,8 @@ public class ImplementationModel {
         for (MappingModel mapping : mappings) {
             mapping.initialise(this);
         }
+
+        return this;
     }
 
 
@@ -206,7 +231,7 @@ public class ImplementationModel {
      * @return the name of the implementing class
      */
     @Nonnull
-    public String getClassName() {
+    public String getTypeName() {
         return parent.getQualifiedName();
     }
 
@@ -217,7 +242,7 @@ public class ImplementationModel {
      */
     @Nonnull
     public String getQualifiedName() {
-        return getClassName() + "." + getName();
+        return getTypeName() + "." + getName();
     }
 
 
@@ -253,8 +278,8 @@ public class ImplementationModel {
 
 
     /**
-     * Returns all the mapping Model used by this implementation. There will be at least one mapping in the
-     * returned list.
+     * Returns all the mapping Model used by this implementation, sorted by their RegEx.
+     * There will be at least one mapping in the returned list.
      * @return all the mapping Model used by this implementation.
      */
     @Nonnull
@@ -264,7 +289,7 @@ public class ImplementationModel {
 
 
     /**
-     * Returns all the parameter models in the order they are declared but excluding tables, used by these mappings.
+     * Returns all the parameter models (excluding tables) in the order they are declared.
      * An empty list will be returned if the mappings have no parameters
      * @return all the parameter models used by these mappings.
      */

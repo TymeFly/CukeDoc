@@ -12,6 +12,11 @@ class AbstractParameterModel {
     private final String description;
     private final String friendlyName;
 
+    /**
+     * Constructor
+     * @param name              the name of this table as seen in the method parameters
+     * @param description       Description of the parameter from the comments
+     */
     AbstractParameterModel(@Nonnull String name, @Nonnull String description) {
         Preconditions.checkNotNull(name, "Invalid parameter name");
         Preconditions.checkNotNull(description, "Invalid parameter description");
