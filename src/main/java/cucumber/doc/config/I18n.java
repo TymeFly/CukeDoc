@@ -7,6 +7,8 @@ import javax.annotation.Nonnull;
 enum I18n {
     EN(Locale.ENGLISH),
 
+    EN_US(Locale.US),
+
     FR(Locale.FRENCH);
 
 
