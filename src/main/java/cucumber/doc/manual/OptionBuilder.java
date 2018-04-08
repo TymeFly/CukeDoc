@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
  * Part of the InfoPage builder flowing interface. Used to restrict the API to valid options after an option has
  * been defined
  */
-public interface OptionBuilder extends InitialBuilder {
+public interface OptionBuilder {
 
     /**
      * Add an argument to the option

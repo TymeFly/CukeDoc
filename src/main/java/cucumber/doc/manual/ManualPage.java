@@ -10,22 +10,20 @@ import javax.annotation.Nonnull;
  * Used to create a page of information to help the user
  */
 public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
-    private static class Description {
-        private static int maxCommandLine = 0;
-
+    private class Entry {
         private String name;
         private String separator = "";
         private List<String> description = new ArrayList<>();
 
-        Description(@Nonnull String commandLine) {
+        Entry(@Nonnull String commandLine) {
             this.name = commandLine;
-            this.maxCommandLine = Math.max(maxCommandLine, commandLine.length());
+            ManualPage.this.maxCommandLine = Math.max(maxCommandLine, commandLine.length());
         }
 
         void addArgument(@Nonnull String argument) {
-            name = name + " <" + argument + ">" + separator;
-            separator = ", ";
-            this.maxCommandLine = Math.max(maxCommandLine, name.length());
+            name = name  + separator + " <" + argument + ">";
+            separator = ",";
+            ManualPage.this.maxCommandLine = Math.max(maxCommandLine, name.length());
         }
 
         void addDescription(@Nonnull String description) {
@@ -38,14 +36,15 @@ public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
     private static final String INDENT = "  ";
 
     private final String title;
-    private final List<Description> descriptions;
+    private final List<Entry> entries;
 
-    private Description current;            // never null if we the client doesn't cast the interfaces
+    private Entry current;            // never null if the client doesn't cast the interfaces
+    private int maxCommandLine = 0;
 
 
     private ManualPage(@Nonnull String title) {
         this.title = title;
-        this.descriptions = new ArrayList<>();
+        this.entries = new ArrayList<>();
     }
 
 
@@ -63,8 +62,8 @@ public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
     @Override
     @Nonnull
     public OptionBuilder withOptions(@Nonnull String options) {
-        current = new Description(options);
-        descriptions.add(current);
+        current = new Entry(options);
+        entries.add(current);
 
         return this;
     }
@@ -105,18 +104,18 @@ public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
     @Nonnull
     public String build() {
         StringBuilder builder = new StringBuilder();
-        char[] align = new char[Description.maxCommandLine + 2];
+        char[] align = new char[maxCommandLine + 2];
 
         Arrays.fill(align, ' ');
 
         builder.append(title)
                .append(EOL);
 
-        for (Description d : descriptions) {
+        for (Entry e : entries) {
             builder.append(INDENT)
-                   .append(d.name)
-                   .append(align, 0, (align.length - d.name.length()))
-                   .append(buildDescription(d, align))
+                   .append(e.name)
+                   .append(align, 0, (align.length - e.name.length()))
+                   .append(buildDescription(e, align))
                    .append(EOL);
         }
 
@@ -125,7 +124,7 @@ public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
 
 
     @Nonnull
-    private StringBuilder buildDescription(@Nonnull Description description, char[] align) {
+    private StringBuilder buildDescription(@Nonnull Entry description, char[] align) {
         List<String> lines = description.description;
         StringBuilder builder = new StringBuilder();
         boolean first = true;
@@ -135,7 +134,6 @@ public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
                 first = false;
             } else {
                 builder.append(EOL)
-                       .append(INDENT)
                        .append(INDENT)
                        .append(align);
             }
