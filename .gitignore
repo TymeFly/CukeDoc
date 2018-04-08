@@ -4,8 +4,7 @@
 
 # Package Files #
 *.jar
-*.war
-*.ear
+dependency-reduced-pom.xml
 
 ## Build tools
 target/
