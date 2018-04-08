@@ -6,13 +6,14 @@ import java.util.ResourceBundle;
 
 import javax.annotation.Nonnull;
 
+import cucumber.doc.annotation.VisibleForTesting;
 import cucumber.doc.exception.CukeDocException;
 
 /**
  * i18n implementation
  */
 public class Translate {
-    private static Translate instance = getInstance();
+    private static Translate instance;
 
     private final ResourceBundle labels;
 
@@ -22,9 +23,16 @@ public class Translate {
     }
 
 
+    /** Used by Unit tests only */
+    @VisibleForTesting
+    static void setI18n(@Nonnull I18n i18n) {
+        instance = new Translate(i18n);
+    }
+
+
     @Nonnull
     private static Translate getInstance() {
-        if (instance ==  null) {
+        if (instance == null) {
             instance = new Translate(Config.getInstance().getI18n());
         }
 

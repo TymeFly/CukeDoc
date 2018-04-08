@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.sun.javadoc.DocErrorReporter;
+import cucumber.doc.annotation.VisibleForTesting;
 import cucumber.doc.manual.ManualPage;
 import cucumber.doc.report.Format;
 import cucumber.doc.util.EnumUtils;
@@ -20,24 +21,25 @@ import cucumber.doc.util.StringUtils;
 import cucumber.doc.util.Trace;
 
 /**
- * CukeDoc configuration
+ * CukeDoc configuration. As far as we can, the command line options will match those defined by JavaDoc
  */
 public class Config {
-    private static final Config INSTANCE = new Config();
+    private static Config instance = newInstance();
 
     private String title = "CukeDoc";
     private String footer = "";
     private String top = "";
     private String bottom = "";
-    private String directory = "target/site/cuke-doc/";
+    private String directory = "target/site/cuke-doc";
     private String descriptionPath = null;
     private String iconPath = "html/cuke-doc.png";
     private List<String> xmlList = new ArrayList<>();
-    private EnumSet<Format> formats = EnumSet.allOf(Format.class);
     private I18n i18n = I18n.EN;
     private boolean trace = false;
     private boolean configured = false;
     private List<String> notesPath = new ArrayList<>();
+    private EnumSet<Format> formats = EnumSet.allOf(Format.class);
+    private boolean formatsSet = false;
 
 
     /** Hide singleton constructor */
@@ -46,12 +48,25 @@ public class Config {
 
 
     /**
-     * Returns the singleton instance of this class
-     * @return the singleton instance of this class
+     * Factory method used only for Unit testing.
+     * @return a new instance of the 'singleton' Config object
+     */
+    @Nonnull
+    @VisibleForTesting
+    public static Config newInstance() {
+        instance = new Config();
+
+        return getInstance();
+    }
+
+
+    /**
+     * Returns the singleton instance of the Config object
+     * @return the singleton instance of the Config object
      */
     @Nonnull
     public static Config getInstance() {
-        return INSTANCE;
+        return instance;
     }
 
 
@@ -89,10 +104,11 @@ public class Config {
             trace = true;
             count = 1;
         } else if ("-help".equals(option) || "-h".equals(option)) {
+            count = 1;                              // Not used, but will keep the compiler happy
+
             System.out.println(buildHelpPage());
             System.exit(0);                         // TODO: is there a better way to terminate?
 
-            count = 1;
         } else {
             count = 0;
         }
@@ -115,13 +131,13 @@ public class Config {
         Trace.message("Arguments");
 
         for (String[] option : options) {
-            String key = option[0];
+            String key = (option.length != 0 ? option[0] : "");
             String value = (option.length >= 2 ? option[1] : null);
 
-            Trace.message("  %s, %s", key, (value == null ? "" : " => " + value));
+            Trace.message("  %s%s", key, (value == null ? "" : ", => " + value));
 
             if ("-i18n".equals(key)) {
-                i18n = EnumUtils.toEnum(value, I18n.class);
+                i18n = EnumUtils.toEnum(I18n.class, value);
             } else if ("-link".equals(key)) {
                 xmlList.add(value);
                 valid &= validatePath(key, value, reporter);
@@ -139,7 +155,12 @@ public class Config {
             } else if ("-d".equals(key)) {
                 directory = value;
             } else if ("-format".equals(key)) {
-                formats = EnumUtils.toEnums(StringUtils.toList(value), Format.class);
+                if (!formatsSet) {
+                    formatsSet = true;
+                    formats = EnumSet.noneOf(Format.class);
+                }
+
+                formats.addAll(EnumUtils.toEnums(Format.class, StringUtils.toList(value)));
             } else if ("-icon".equals(key)) {
                 iconPath = value;
                 valid &= validatePath(key, value, reporter);
@@ -147,11 +168,13 @@ public class Config {
                 notesPath.add(value);
                 valid &= validatePath(key, value, reporter);
             } else {
-                // ignore unexpected option
+                // ignore unexpected argument - javaDoc may be using it;
             }
         }
 
         configured = true;
+
+        Trace.message("Arguments are %s", (valid ? "valid" : "INVALID"));
 
         return valid;
     }
@@ -174,7 +197,8 @@ public class Config {
             ManualPage.create("Cuke-Doc options:")
                 .withOptions("-i18n")
                     .withArgument("locale")
-                    .withDescription("Language of generated documentation")
+                    .withDescription("Language of generated documentation. Valid locales are:")
+                    .withDescription(StringUtils.asString(EnumSet.allOf(I18n.class)))
                 .withOptions("-link")
                     .withArgument("path")
                     .withDescription("Path to an XML report from another project." +
@@ -198,13 +222,14 @@ public class Config {
                 .withOptions("-format")
                     .withArgument("formats")
                     .withDescription("Comma separated list containing one or more of 'BASIC', 'XML' or 'HTML'")
+                    .withDescription("Multiple formats can be specified")
                 .withOptions("-icon")
                     .withArgument("path")
                     .withDescription("Browser window favicon for the documentation")
                 .withOptions("-notes")
                     .withArgument("path")
                     .withDescription("Optional set of notes that will be included in the report")
-                    .withDescription("Multiple sets of notes can be added")
+                    .withDescription("Multiple sets of notes can be specified")
                 .withOptions("-description")
                     .withArgument("path")
                     .withDescription("Add a description to the Overview page")
@@ -219,6 +244,17 @@ public class Config {
 
 
     /**
+     * Only called by Unit test
+     * @param trace     {@code true} only if trace mode is enabled
+     */
+    @VisibleForTesting
+    public void setTrace(boolean trace) {
+        this.trace = trace;
+        this.configured = true;
+    }
+
+
+    /**
      * Returns {@code true} only if trace mode is enabled
      * @return {@code true} only if trace mode is enabled
      */
@@ -228,8 +264,9 @@ public class Config {
 
 
     /**
-     * Returns a list of XML documents to be included in the generated report
-     * @return a list of XML documents to be included in the generated report
+     * Returns the XML document locations to be included in the generated report. If no links are set then
+     * an empty collection will be returned
+     * @return an immutable collection of XML document locations.
      */
     @Nonnull
     public Collection<String> getLinks() {
@@ -241,7 +278,7 @@ public class Config {
 
     /**
      * Returns the target language
-     * @return the target language
+     * @return the target language, or {@link I18n#EN} if no language has been set
      */
     @Nonnull
     public I18n getI18n() {
@@ -253,7 +290,7 @@ public class Config {
 
     /**
      * Returns the title of the report
-     * @return the title of the report
+     * @return the title of the report, or {@literal "CukeDoc"} if no title has been set
      */
     @Nonnull
     public String getTitle() {
@@ -265,7 +302,7 @@ public class Config {
 
     /**
      * Returns the text to be added to the footer of a HTML report
-     * @return the text to be added to the footer of a HTML report
+     * @return the text to be added to the footer of a HTML report, or an empty string if no footer has been set
      */
     @Nonnull
     public String getFooter() {
@@ -277,7 +314,7 @@ public class Config {
 
     /**
      * Returns the html to be added to the top of a HTML report
-     * @return the html to be added to the top of a HTML report
+     * @return the html to be added to the top of a HTML report, or an empty string if no top text has been set
      */
     @Nonnull
     public String getTop() {
@@ -289,7 +326,7 @@ public class Config {
 
     /**
      * Returns the html to be added to the bottom of a HTML report
-     * @return the html to be added to the bottom of a HTML report
+     * @return the html to be added to the bottom of a HTML report, or an empty string if no bottom text has been set
      */
     @Nonnull
     public String getBottom() {
@@ -300,7 +337,8 @@ public class Config {
 
 
     /**
-     * Returns the directory the generated reports will be written to
+     * Returns the directory the generated reports will be written to.
+     * The default directory is {@code literal "target/site/cuke-doc"}
      * @return the directory the generated reports will be written to
      */
     @Nonnull
@@ -312,7 +350,8 @@ public class Config {
 
 
     /**
-     * Returns a valid path to the favicon
+     * Returns a valid path to the favicon.
+     * The default is an icon that comes bundled with CukeDoc
      * @return a valid path to the favicon
      */
     @Nonnull
@@ -325,7 +364,7 @@ public class Config {
 
     /**
      * Returns a paths to a text files that contains notes for the harness;.
-     *  An empty list indicates no notes were requested
+     * An empty list indicates no notes were requested
      * @return a paths to a text files that contains notes for the harness
      */
     @Nonnull
@@ -350,7 +389,7 @@ public class Config {
 
 
     /**
-     * Returns the required report types
+     * Returns the required report types. The default is all available formats
      * @return the required report types
      */
     @Nonnull

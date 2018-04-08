@@ -1,6 +1,7 @@
 package cucumber.doc.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -159,6 +160,29 @@ public class StringUtils {
 
 
     /**
+     * Return a representation of the collection as a comma separated list of values. If the collection
+     * is empty then an empty list is returned.
+     * @param values        values to be represented in the string
+     * @return              a coma separated list of values.
+     */
+    @Nonnull
+    public static String asString(@Nonnull Collection<?> values) {
+        // TODO: Unit test me
+        StringBuilder builder = new StringBuilder();
+        String separator = "";
+
+        for (Object value : values) {
+            String str = (value == null ? "<null>" : value.toString());
+            builder.append(separator).append(str);
+
+            separator = ", ";
+        }
+
+        return builder.toString();
+    }
+
+
+    /**
      * If {@code surround} text is before and/or after the {@code str} content, then remove it
      * @param str           string to trim
      * @param surround      optional surrounding text
@@ -182,7 +206,7 @@ public class StringUtils {
         str = str.trim();
 
         if (str.startsWith(prefix)) {
-            str = str.substring(prefix.length(), str.length() - prefix.length());
+            str = str.substring(prefix.length());
         }
 
         str = trimTail(str, suffix);

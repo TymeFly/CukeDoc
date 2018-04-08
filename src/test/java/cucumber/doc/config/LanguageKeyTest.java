@@ -11,7 +11,7 @@ public class LanguageKeyTest {
      * Unit test {@link LanguageKey#getKey()}
      */
     @Test
-    public void testName() {
+    public void test_getKey() {
         Assert.assertEquals("Unexpected key", "overview_title", LanguageKey.OVERVIEW_TITLE.getKey());
     }
 }
