@@ -1,10 +1,3 @@
-/*
- * Copyrighted as an unpublished work 2018 D&B.
- * Proprietary and Confidential.  Use, possession and disclosure subject to license agreement.
- * Unauthorized use, possession or disclosure is a violation of D&B's legal rights and may result
- * in suit or prosecution.
- */
-
 package cucumber.doc.model;
 
 import org.junit.Assert;
