@@ -9,11 +9,11 @@ import org.junit.Test;
 public class HtmlUtilsTest {
 
     /**
-     * Unit test {@link HtmlUtils#cleanDescription}
+     * Unit test {@link HtmlUtils#cleanDescription(String)}
      */
     @Test
     public void test_cleanDescription() {
-        Assert.assertEquals("null", null, HtmlUtils.cleanDescription(null));
+        Assert.assertEquals("null", "", HtmlUtils.cleanDescription(null));
         Assert.assertEquals("Empty Description", "", HtmlUtils.cleanDescription(""));
         Assert.assertEquals("No Change required", "Hello world.", HtmlUtils.cleanDescription("Hello world."));
         Assert.assertEquals("just code", "<code>alf</code>", HtmlUtils.cleanDescription("{@code alf}"));
@@ -26,5 +26,16 @@ public class HtmlUtilsTest {
         Assert.assertEquals("local link", "<code>alf</code>", HtmlUtils.cleanDescription("{@link #alf}"));
         Assert.assertEquals("class link", "<code>a.b.c</code>", HtmlUtils.cleanDescription("{@link a.b.c}"));
         Assert.assertEquals("link into class", "<code>a.b.c.d</code>", HtmlUtils.cleanDescription("{@link a.b.c#d}"));
+    }
+
+
+    /**
+     * Unit test {@link HtmlUtils#cleanDescription(String, String)}
+     */
+    @Test
+    public void test_CleanDescription_WithDefault() {
+        Assert.assertEquals("null", "defaultValue", HtmlUtils.cleanDescription(null, "defaultValue"));
+        Assert.assertEquals("Empty Description", "defaultValue", HtmlUtils.cleanDescription("", "defaultValue"));
+        Assert.assertEquals("With value", "Hello world.", HtmlUtils.cleanDescription("Hello world.", "defaultValue"));
     }
 }

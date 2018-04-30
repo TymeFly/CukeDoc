@@ -40,6 +40,16 @@ import static j2html.TagCreator.ul;
  * Builder for a type
  */
 class TypePageBuilder implements PageBuilder {
+    private static final String DEFAULT_TABLE_DESCRIPTION =
+        i(
+          text('<' + Translate.message(LanguageKey.CLASS_TABLE) + '>')
+        ).renderFormatted();
+
+    private static final String DEFAULT_ARGUMENT_DESCRIPTION =
+        i(
+          text('<' + Translate.message(LanguageKey.CLASS_ARGUMENT) + '>')
+        ).renderFormatted();
+
     private final TypeModel typeModel;
 
 
@@ -233,7 +243,7 @@ class TypePageBuilder implements PageBuilder {
                                     Translate.message(LanguageKey.CLASS_HOVER_FORMAT) + ":\n  " +
                                     parameters.getFriendlyFormat()),
                         text(":"),
-                        rawHtml(HtmlUtils.cleanDescription(parameters.getDescription()))
+                        rawHtml(HtmlUtils.cleanDescription(parameters.getDescription(), DEFAULT_ARGUMENT_DESCRIPTION))
                       )
                     )
                   )
@@ -252,9 +262,10 @@ class TypePageBuilder implements PageBuilder {
                 ul(
                   li(
                     rawHtml(
-                      (implementation.getTable() == null ?
-                        "" :
-                        HtmlUtils.cleanDescription(implementation.getTable().getDescription())
+                      (implementation.getTable() != null ?
+                        HtmlUtils.cleanDescription(implementation.getTable().getDescription(),
+                                                   DEFAULT_TABLE_DESCRIPTION) :
+                        DEFAULT_TABLE_DESCRIPTION
                       )
                     )
                   )
