@@ -120,6 +120,9 @@
     <module name="FileTabCharacter">                          <!--  Tabs are not allowed  -->
         <property name="eachLine" value="true"/>
     </module>
+    <module name="RegexpHeader">
+        <property name="header" value="^package cucumber\.doc(\.[a-z0-9]+)*;$"/>
+    </module>
 </module>
 
 
