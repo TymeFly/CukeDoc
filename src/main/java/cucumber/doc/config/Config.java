@@ -160,7 +160,7 @@ public class Config {
                     formats = EnumSet.noneOf(Format.class);
                 }
 
-                formats.addAll(EnumUtils.toEnums(Format.class, StringUtils.toList(value)));
+                formats.addAll(EnumUtils.toEnums(Format.class, StringUtils.asList(value)));
             } else if ("-icon".equals(key)) {
                 iconPath = value;
                 valid &= validatePath(key, value, reporter);

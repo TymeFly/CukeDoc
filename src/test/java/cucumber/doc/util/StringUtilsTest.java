@@ -25,20 +25,32 @@ public class StringUtilsTest {
 
 
     /**
-     * Unit test {@link StringUtils#toList}
+     * Unit test {@link StringUtils#asList}
      */
     @Test
     public void test_toList() {
-        Assert.assertEquals("Empty", Arrays.asList(), StringUtils.toList(""));
-        Assert.assertEquals("Spaces", Arrays.asList(), StringUtils.toList("  "));
-        Assert.assertEquals("One item", Arrays.asList("One"), StringUtils.toList("One"));
-        Assert.assertEquals("Two words", Arrays.asList("One Two"), StringUtils.toList("One Two"));
-        Assert.assertEquals("Two items", Arrays.asList("One","Two"), StringUtils.toList("One,Two"));
-        Assert.assertEquals("Two trimmed items", Arrays.asList("One","Two"), StringUtils.toList("  One , Two  "));
-        Assert.assertEquals("Ignore empty elements", Arrays.asList("One","Two"), StringUtils.toList(",One,,Two,"));
-        Assert.assertEquals("Empty inner elements", Arrays.asList("One","Two"), StringUtils.toList("One,,,Two"));
-        Assert.assertEquals("Empty start elements", Arrays.asList("One","Two"), StringUtils.toList(",,,One, Two"));
-        Assert.assertEquals("Empty end elements", Arrays.asList("One","Two"), StringUtils.toList("One, Two,,,"));
+        Assert.assertEquals("Empty", Arrays.asList(), StringUtils.asList(""));
+        Assert.assertEquals("Spaces", Arrays.asList(), StringUtils.asList("  "));
+        Assert.assertEquals("One item", Arrays.asList("One"), StringUtils.asList("One"));
+        Assert.assertEquals("Two words", Arrays.asList("One Two"), StringUtils.asList("One Two"));
+        Assert.assertEquals("Two items", Arrays.asList("One","Two"), StringUtils.asList("One,Two"));
+        Assert.assertEquals("Two trimmed items", Arrays.asList("One","Two"), StringUtils.asList("  One , Two  "));
+        Assert.assertEquals("Ignore empty elements", Arrays.asList("One","Two"), StringUtils.asList(",One,,Two,"));
+        Assert.assertEquals("Empty inner elements", Arrays.asList("One","Two"), StringUtils.asList("One,,,Two"));
+        Assert.assertEquals("Empty start elements", Arrays.asList("One","Two"), StringUtils.asList(",,,One, Two"));
+        Assert.assertEquals("Empty end elements", Arrays.asList("One","Two"), StringUtils.asList("One, Two,,,"));
+    }
+
+
+    /**
+     * Unit test {@link StringUtils#asList}
+     */
+    @Test
+    public void test_FromList() {
+        Assert.assertEquals("Empty List", "", StringUtils.asString(new Object[]{}));
+        Assert.assertEquals("One item", "1", StringUtils.asString(new Object[]{ 1 }));
+        Assert.assertEquals("Two items", "1, Two", StringUtils.asString(new Object[]{ 1, "Two" }));
+        Assert.assertEquals("Three items", "1, Two, 3.0", StringUtils.asString(new Object[]{ 1, "Two", 3.0 }));
     }
 
 

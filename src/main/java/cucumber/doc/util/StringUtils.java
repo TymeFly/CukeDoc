@@ -139,8 +139,10 @@ public class StringUtils {
      * Split a comma delimited list into it's component parts, removing any white space
      * @param str       string to split
      * @return          the component parts
+     * @see #asString(Collection)
+     * @see #asString(Object[])
      */
-    public static List<String> toList(@Nonnull String str) {
+    public static List<String> asList(@Nonnull String str) {
         List<String> result;
 
         str = str.trim()
@@ -160,14 +162,26 @@ public class StringUtils {
 
 
     /**
+     * Return a representation of the array as a comma separated list of values. If the array
+     * is empty then an empty list is returned.
+     * @param values        values to be represented in the string
+     * @return              a coma separated list of values.
+     * @see #asList(String)
+     */
+    public static String asString(@Nonnull Object[] values) {
+        return asString(Arrays.asList(values));
+    }
+
+
+    /**
      * Return a representation of the collection as a comma separated list of values. If the collection
      * is empty then an empty list is returned.
      * @param values        values to be represented in the string
      * @return              a coma separated list of values.
+     * @see #asList(String)
      */
     @Nonnull
     public static String asString(@Nonnull Collection<?> values) {
-        // TODO: Unit test me
         StringBuilder builder = new StringBuilder();
         String separator = "";
 
