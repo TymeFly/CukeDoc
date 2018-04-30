@@ -1,0 +1,20 @@
+        --==| CukeDoc |==--
+
+Class1:
+    Given 	mapping1
+
+Class2:
+    Given 	mapping2 (\d+) (.*)
+    Given 	mapping3-a
+    And 	mapping3-b
+
+--==| Notes |==--
+
+Line1
+Line3
+
+
+note2
+
+--------
+Built on dd MMM yyyy at hh:mm

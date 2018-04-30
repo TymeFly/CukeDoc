@@ -1,5 +1,6 @@
 package cucumber.doc.report.basic;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -13,6 +14,7 @@ import cucumber.doc.model.MappingModel;
 import cucumber.doc.model.NoteModel;
 import cucumber.doc.model.TypeModel;
 import cucumber.doc.report.ReportBuilder;
+import cucumber.doc.util.DateUtils;
 import cucumber.doc.util.FileUtils;
 
 /**
@@ -47,12 +49,14 @@ public class BasicReport implements ReportBuilder {
     @Nonnull
     private String generatedReport() {
         StringBuilder builder = new StringBuilder();
+        String title = Config.getInstance().getTitle();
 
         builder.append(INDENT).append(INDENT)
-               .append("--==| ").append(Config.getInstance().getTitle()).append(" |==--")
+               .append("--==| ").append(title).append(" |==--")
                .append(EOL).append(EOL);
         describeMappings(builder);
         addNotes(builder);
+        addDate(builder);
 
         return builder.toString();
     }
@@ -94,5 +98,17 @@ public class BasicReport implements ReportBuilder {
                        .append(EOL);
             }
         }
+    }
+
+
+    private void addDate(@Nonnull StringBuilder builder) {
+        Date buildDate = DateUtils.localDate();
+        String message = Translate.message(LanguageKey.FOOTER_BUILD_STAMP, buildDate, buildDate);
+
+        builder.append(EOL)
+               .append("--------")
+               .append(EOL)
+               .append(message)
+               .append(EOL);
     }
 }
