@@ -18,7 +18,7 @@ public class ApplicationModel {
      */
     public static class Builder {
         private List<TypeModel> types = new ArrayList<>();
-        private List<String> notes = new ArrayList<>();
+        private List<NoteModel> notes = new ArrayList<>();
 
 
         /**
@@ -38,11 +38,12 @@ public class ApplicationModel {
 
         /**
          * Add a new set of notes to the application
-         * @param notes     human readable text
+         * @param note      Model of the note to be added
+         * @return          A flowing interface
          */
         @Nonnull
-        public Builder withNote(@Nonnull String notes) {
-            this.notes.add(notes);
+        public Builder withNote(@Nonnull NoteModel note) {
+            this.notes.add(note);
 
             return this;
         }
@@ -50,7 +51,7 @@ public class ApplicationModel {
 
         /**
          * Build an ApplicationModel
-         * @return an ApplicationModel
+         * @return a new ApplicationModel
          */
         @Nonnull
         public ApplicationModel build() {
@@ -61,7 +62,7 @@ public class ApplicationModel {
 
     private final List<TypeModel> types;
     private final List<MappingModel> mappings;
-    private final List<String> notes;
+    private final List<NoteModel> notes;
 
 
     private ApplicationModel(@Nonnull Builder builder) {
@@ -113,7 +114,7 @@ public class ApplicationModel {
      * @return all of the notes applied to this application in the order they were added
      */
     @Nonnull
-    public List<String> getNotes() {
+    public List<NoteModel> getNotes() {
         return notes;
     }
 }

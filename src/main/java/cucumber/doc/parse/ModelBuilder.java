@@ -5,7 +5,9 @@ import javax.annotation.Nonnull;
 import com.sun.javadoc.RootDoc;
 import cucumber.doc.config.Config;
 import cucumber.doc.model.ApplicationModel;
+import cucumber.doc.model.NoteModel;
 import cucumber.doc.util.FileUtils;
+import cucumber.doc.util.NoteFormat;
 import cucumber.doc.util.Trace;
 
 /**
@@ -32,15 +34,11 @@ public class ModelBuilder {
         ApplicationModel.Builder builder = new Scanner(root).scan();
 
         addNotes(builder);
-
-        for (String xmlFile : Config.getInstance().getLinks()) {
-            Trace.message("Linking to xml report %s", xmlFile);
-
-            new ImportXml().importXml(builder, xmlFile);
-        }
+        addLinks(builder);
 
         return builder.build();
     }
+
 
 
     /**
@@ -50,8 +48,20 @@ public class ModelBuilder {
      */
     private void addNotes(@Nonnull ApplicationModel.Builder builder) {
         for (String notesPath : Config.getInstance().getNotesPath()) {
-            String notes = FileUtils.read(notesPath);
-            builder.withNote(notes);
+            String text = FileUtils.read(notesPath);
+            NoteFormat format = NoteFormat.forFile(notesPath);
+            NoteModel model = new NoteModel(text, format);
+
+            builder.withNote(model);
+        }
+    }
+
+
+    private void addLinks(@Nonnull ApplicationModel.Builder builder) {
+        for (String xmlFile : Config.getInstance().getLinks()) {
+            Trace.message("Linking to xml report %s", xmlFile);
+
+            new ImportXml().importXml(builder, xmlFile);
         }
     }
 }

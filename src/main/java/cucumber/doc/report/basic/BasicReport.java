@@ -5,9 +5,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import cucumber.doc.config.Config;
+import cucumber.doc.config.LanguageKey;
+import cucumber.doc.config.Translate;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.ImplementationModel;
 import cucumber.doc.model.MappingModel;
+import cucumber.doc.model.NoteModel;
 import cucumber.doc.model.TypeModel;
 import cucumber.doc.report.ReportBuilder;
 import cucumber.doc.util.FileUtils;
@@ -78,15 +81,16 @@ public class BasicReport implements ReportBuilder {
 
 
     private void addNotes(@Nonnull StringBuilder builder) {
-        List<String> notes = model.getNotes();
+        String title = Translate.message(LanguageKey.NOTES_TITLE);
+        List<NoteModel> notes = model.getNotes();
 
         if (!notes.isEmpty()) {
-            builder.append("--==| Notes |==--")
+            builder.append("--==| ").append(title).append(" |==--")
                    .append(EOL);
 
-            for (String note : notes) {
+            for (NoteModel note : notes) {
                 builder.append(EOL)
-                       .append(note)
+                       .append(note.getText())
                        .append(EOL);
             }
         }

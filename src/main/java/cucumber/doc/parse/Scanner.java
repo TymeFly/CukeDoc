@@ -30,7 +30,7 @@ import cucumber.doc.util.StringUtils;
 /**
  * Extract the data we are interested in from a {@link RootDoc} and store it in a {@link TypeModel}
  */
-public class Scanner {
+class Scanner {
     private static final String TABLE_TYPE = "cucumber.api.DataTable";
 
     private final Set<String> annotations;
@@ -57,12 +57,15 @@ public class Scanner {
     @Nonnull
     ApplicationModel.Builder scan() {
         ApplicationModel.Builder builder = new ApplicationModel.Builder();
+        ClassDoc[] classes = root.classes();
 
-        for (ClassDoc classDoc : root.classes()) {
-            TypeModel typeModel = scanClass(classDoc);
+        if (classes != null) {
+            for (ClassDoc classDoc : classes) {
+                TypeModel typeModel = scanClass(classDoc);
 
-            if (typeModel != null) {
-                builder.withType(typeModel);
+                if (typeModel != null) {
+                    builder.withType(typeModel);
+                }
             }
         }
 
@@ -79,17 +82,20 @@ public class Scanner {
     @Nullable
     private TypeModel scanClass(@Nonnull ClassDoc description) {
         TypeModel.Builder builder = null;
+        MethodDoc[] methods = description.methods();
 
-        for (MethodDoc method : description.methods()) {
-            ImplementationModel implementationModel = scanMethod(method);
+        if (methods != null) {
+            for (MethodDoc method : methods) {
+                ImplementationModel implementationModel = scanMethod(method);
 
-            if (implementationModel != null) {
-                if (builder == null) {
-                    builder = new TypeModel.Builder(description.name(), description.qualifiedName());
-                    scanMethodComment(builder, description);
+                if (implementationModel != null) {
+                    if (builder == null) {
+                        builder = new TypeModel.Builder(description.name(), description.qualifiedName());
+                        scanComment(builder, description);
+                    }
+
+                    builder.withImplementation(implementationModel);
                 }
-
-                builder.withImplementation(implementationModel);
             }
         }
 
@@ -107,22 +113,25 @@ public class Scanner {
     private ImplementationModel scanMethod(@Nonnull MethodDoc description) {
         ImplementationModel.Builder builder = null;
         String regEx = null;
+        AnnotationDesc[] annotations = description.annotations();
 
-        for (AnnotationDesc annotation : description.annotations()) {
-            String annotationClass = annotation.annotationType().qualifiedName();
+        if (annotations != null) {
+            for (AnnotationDesc annotation : annotations) {
+                String annotationClass = annotation.annotationType().qualifiedName();
 
-            if (annotations.contains(annotationClass)) {
-                if (builder == null) {
-                    builder = new ImplementationModel.Builder(description.name());
+                if (this.annotations.contains(annotationClass)) {
+                    if (builder == null) {
+                        builder = new ImplementationModel.Builder(description.name());
+                    }
+
+                    regEx = scanAnnotation(builder, annotation, description.name());
                 }
-
-                regEx = scanAnnotation(builder, annotation, description.name());
             }
         }
 
         if (builder != null) {
-            scanParameters(builder, regEx, description);
-            scanMethodComment(builder, description);
+            scanParameters(builder, description, regEx);
+            scanComment(builder, description);
         }
 
         return (builder == null ? null : builder.build());
@@ -160,45 +169,51 @@ public class Scanner {
     /**
      * Scan an cucumber mapping method description to populate the DTO builder
      * @param builder               builder to populate
-     * @param regEx                 A regular expression for the mapping
      * @param description           Description of a method that implementation at least one cucumber annotation
+     * @param regEx                 A regular expression for the mapping
      */
     private void scanParameters(@Nonnull ImplementationModel.Builder builder,
-                                @Nonnull String regEx,
-                                @Nonnull MethodDoc description) {
+                                @Nonnull MethodDoc description,
+                                @Nonnull String regEx) {
         Map<String, String> comments = new HashMap<>();
-
         List<String> captureGroups = RegExSplitter.compile(regEx).getCaptureGroups();
+        ParamTag[] paramTags = description.paramTags();
 
         // Loop over the @param comments in the JavaDoc
-        for (ParamTag tag :  description.paramTags()) {
-            comments.put(tag.parameterName(), tag.parameterComment());
+        if (paramTags != null) {
+            for (ParamTag tag : paramTags) {
+                comments.put(tag.parameterName(), tag.parameterComment());
+            }
         }
 
-        // Loop over the formal parameters matching them (in order) to their descriptions
-        int index = 0;
-        for (Parameter p:  description.parameters()) {
-            String name = p.name();
-            String type = p.type().qualifiedTypeName();
-            String comment = comments.get(name);
-            comment = Check.hasText(comment) ? comment : name;
+        Parameter[] parameters = description.parameters();
 
-            if (TABLE_TYPE.equals(type)) {
-                builder.withTable(name, comment);
-            } else {
-                String captureGroup = (index >= captureGroups.size() ? "<unknown>" : captureGroups.get(index++));
-                builder.withParameter(name, type, captureGroup, comment);
+        // Loop over the formal parameters matching them (in order) to their descriptions
+        if (parameters != null) {
+            int index = 0;
+            for (Parameter p : parameters) {
+                String name = p.name();
+                String type = p.type().qualifiedTypeName();
+                String comment = comments.get(name);
+                comment = Check.hasText(comment) ? comment : name;
+
+                if (TABLE_TYPE.equals(type)) {
+                    builder.withTable(name, comment);
+                } else {
+                    String captureGroup = (index >= captureGroups.size() ? "<unknown>" : captureGroups.get(index++));
+                    builder.withParameter(name, type, captureGroup, comment);
+                }
             }
         }
     }
 
 
     /**
-     * Scan an comment associated with an element to populate the DTO builder
+     * Scan an comment associated with an element to populate the builder
      * @param builder               builder to populate
-     * @param description           Description of a comment
+     * @param description           Description of a comment.
      */
-    private void scanMethodComment(@Nonnull DescriptionModelBuilder builder, @Nonnull Doc description) {
+    private void scanComment(@Nonnull DescriptionModelBuilder builder, @Nonnull Doc description) {
         String comment = description.commentText();
         Tag[] since = description.tags("@since");
 

@@ -1,5 +1,6 @@
 package cucumber.doc.model;
 
+import cucumber.doc.util.NoteFormat;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class ApplicationModelTest {
                                         .withMapping("Given", "mapping1")
                                         .build())
                                 .build())
-                        .withNote("note1")
+                        .withNote(new NoteModel("note1", NoteFormat.TEXT))
                         .build();
         app3 = new ApplicationModel.Builder()
                         .withType(new TypeModel.Builder("z-Class2")
@@ -39,9 +40,9 @@ public class ApplicationModelTest {
                                         .withMapping("Given", "b-mapping5")
                                         .build())
                                 .build())
-                        .withNote("b-note2")
-                        .withNote("c-note4")
-                        .withNote("a-note3")
+                        .withNote(new NoteModel("b-note2", NoteFormat.HTML))
+                        .withNote(new NoteModel("c-note4", NoteFormat.TEXT))
+                        .withNote(new NoteModel("a-note3", NoteFormat.TEXT))
                         .build();
     }
 
@@ -90,12 +91,16 @@ public class ApplicationModelTest {
         Assert.assertEquals("app1 has unexpected notes count", 0, app1.getNotes().size());
 
         Assert.assertEquals("app2 has unexpected notes count", 1, app2.getNotes().size());
-        Assert.assertEquals("Unexpected app2 notes", "note1", app2.getNotes().get(0));
+        Assert.assertEquals("Unexpected app2 note format", NoteFormat.TEXT, app2.getNotes().get(0).getFormat());
+        Assert.assertEquals("Unexpected app2 note content", "note1", app2.getNotes().get(0).getText());
 
         // Notes should remain in insertion order
         Assert.assertEquals("app3 has unexpected notes count", 3, app3.getNotes().size());
-        Assert.assertEquals("Unexpected app3 notes 1", "b-note2", app3.getNotes().get(0));
-        Assert.assertEquals("Unexpected app3 notes 2", "c-note4", app3.getNotes().get(1));
-        Assert.assertEquals("Unexpected app3 notes 3", "a-note3", app3.getNotes().get(2));
+        Assert.assertEquals("Unexpected app3 notes 1 format", NoteFormat.HTML, app3.getNotes().get(0).getFormat());
+        Assert.assertEquals("Unexpected app3 notes 1 content", "b-note2", app3.getNotes().get(0).getText());
+        Assert.assertEquals("Unexpected app3 notes 2 format", NoteFormat.TEXT, app3.getNotes().get(1).getFormat());
+        Assert.assertEquals("Unexpected app3 notes 2 content", "c-note4", app3.getNotes().get(1).getText());
+        Assert.assertEquals("Unexpected app3 notes 3 format", NoteFormat.TEXT, app3.getNotes().get(2).getFormat());
+        Assert.assertEquals("Unexpected app3 notes 3 content", "a-note3", app3.getNotes().get(2).getText());
     }
 }

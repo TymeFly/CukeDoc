@@ -22,6 +22,7 @@ import cucumber.doc.exception.CukeDocException;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.ImplementationModel;
 import cucumber.doc.model.MappingModel;
+import cucumber.doc.model.NoteModel;
 import cucumber.doc.model.ParameterModel;
 import cucumber.doc.model.TableModel;
 import cucumber.doc.model.TypeModel;
@@ -99,17 +100,27 @@ public class XmlReport implements ReportBuilder {
 
 
     private void processNotes(@Nonnull Document document, @Nonnull Element parent, @Nonnull ApplicationModel model) {
-        List<String> notes = model.getNotes();
+        List<NoteModel> notes = model.getNotes();
 
         if (!notes.isEmpty()) {
             Element element = document.createElement("notes");
 
-            for (String note : notes) {
-                addNode(document, element, "note", note);
+            for (NoteModel note : notes) {
+                processNote(document, element, note);
             }
 
             parent.appendChild(element);
         }
+    }
+
+
+    private void processNote(@Nonnull Document document, @Nonnull Element parent, @Nonnull NoteModel model) {
+        Element element = document.createElement("note");
+
+        addNode(document, element, "text", model.getText());
+        addNode(document, element, "format", model.getFormat().name());
+
+        parent.appendChild(element);
     }
 
 

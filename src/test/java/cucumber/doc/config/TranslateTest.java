@@ -2,6 +2,7 @@ package cucumber.doc.config;
 
 import java.util.Date;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,6 +10,11 @@ import org.junit.Test;
  * Unit test for {@link Translate}
  */
 public class TranslateTest {
+    @After
+    public void tearDown() {
+        Translate.setI18n(I18n.EN);
+    }
+
 
     /**
      * Unit test {@link Translate#message(LanguageKey)}

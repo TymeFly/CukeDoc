@@ -1,4 +1,3 @@
-
 package cucumber.doc.parse;
 
 import java.io.File;
@@ -15,7 +14,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import cucumber.doc.exception.CukeDocException;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.ImplementationModel;
+import cucumber.doc.model.NoteModel;
 import cucumber.doc.model.TypeModel;
+import cucumber.doc.util.EnumUtils;
+import cucumber.doc.util.NoteFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,7 +33,7 @@ class ImportXml {
      * @param builder           builder to import settings into
      * @param filePath          File to read settings from
      */
-    public void importXml(@Nonnull ApplicationModel.Builder builder, @Nonnull String filePath) {
+    void importXml(@Nonnull ApplicationModel.Builder builder, @Nonnull String filePath) {
         try {
             Document document = getDocument(filePath);
             Element element = document.getDocumentElement();
@@ -67,13 +69,24 @@ class ImportXml {
         Element notes = getOptionalChild(element, "notes");
 
         if (notes != null) {
-            for (Element child : getChildren(notes, "note")) {
-                String note = child.getTextContent();
+            for (Element note : getChildren(notes, "note")) {
+                NoteModel typeModel = importNote(note);
 
-                builder.withNote(note);
+                builder.withNote(typeModel);
             }
         }
     }
+
+
+    @Nonnull
+    private NoteModel importNote(@Nonnull Element child) {
+        String text = readChild(child, "text");
+        NoteFormat format = readChild(child, "format", NoteFormat.class);
+        NoteModel model = new NoteModel(text, format);
+
+        return model;
+    }
+
 
 
     private void importTypes(@Nonnull ApplicationModel.Builder builder, @Nonnull Element element) {
@@ -102,12 +115,21 @@ class ImportXml {
             builder.withDescription(description);
         }
 
-        for (Element type : getChildren(element, "implementation")) {
-            ImplementationModel implementation = importImplementation(type);
-            builder.withImplementation(implementation);
-        }
+        importImplementations(builder, element);
 
         return builder.build();
+    }
+
+
+    private void importImplementations(@Nonnull TypeModel.Builder builder, @Nonnull Element element) {
+        Element implementations = getOptionalChild(element, "implementations");
+
+        if (implementations != null) {
+            for (Element type : getChildren(implementations, "implementation")) {
+                ImplementationModel implementation = importImplementation(type);
+                builder.withImplementation(implementation);
+            }
+        }
     }
 
 
@@ -131,13 +153,8 @@ class ImportXml {
             importTable(table, builder);
         }
 
-        for (Element parameter : getChildren(element, "parameter")) {
-            importParameter(parameter, builder);
-        }
-
-        for (Element mapping : getChildren(element, "mapping")) {
-            importMapping(mapping, builder);
-        }
+        importParameters(builder, element);
+        importMappings(builder, element);
 
         return builder.build();
     }
@@ -151,7 +168,18 @@ class ImportXml {
     }
 
 
-    private void importParameter(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
+    private void importParameters(@Nonnull ImplementationModel.Builder builder, @Nonnull Element element) {
+        Element parameters = getOptionalChild(element, "parameters");
+
+        if (parameters != null) {
+            for (Element type : getChildren(parameters, "parameter")) {
+                importParameter(builder, type);
+            }
+        }
+    }
+
+
+    private void importParameter(@Nonnull ImplementationModel.Builder builder, @Nonnull Element element) {
         String name = readChild(element, "name");
         String type = readChild(element, "type");
         String format = readChild(element, "format");
@@ -161,7 +189,18 @@ class ImportXml {
     }
 
 
-    private void importMapping(@Nonnull Element element, @Nonnull ImplementationModel.Builder builder) {
+    private void importMappings(@Nonnull ImplementationModel.Builder builder, @Nonnull Element element) {
+        Element mappings = getOptionalChild(element, "mappings");
+
+        if (mappings != null) {
+            for (Element type : getChildren(mappings, "mapping")) {
+                importMapping(builder, type);
+            }
+        }
+    }
+
+
+    private void importMapping(@Nonnull ImplementationModel.Builder builder, @Nonnull Element element) {
         String verb = readChild(element, "verb");
         String regEx = readChild(element, "regEx");
 
@@ -226,6 +265,17 @@ class ImportXml {
         }
 
         return child;
+    }
+
+
+    @Nonnull
+    private <T extends Enum<T>> T readChild(@Nonnull Element element,
+                                            @Nonnull String name,
+                                            @Nonnull Class<T> type) {
+        String raw = readChild(element, name);
+        T value = EnumUtils.toEnum(type, raw);
+
+        return value;
     }
 
 
