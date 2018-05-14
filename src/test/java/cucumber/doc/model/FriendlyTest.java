@@ -174,5 +174,10 @@ public class FriendlyTest {
                                   new ParameterModel("o2", "byte", "\\d+", "Octet2"),
                                   new ParameterModel("o3", "byte", "\\d+", "Octet3"),
                                   new ParameterModel("o4", "byte", "\\d+", "Octet4"))));
+        Assert.assertEquals("List as a single string",
+                            "The file(s?) <file-list> must be OK",
+                            Friendly.mapping("^The files? (\".*?\"(?:(?:, ?| and )\".*?\")*) must be OK",
+                                             Arrays.asList(new ParameterModel("file-list", "String", "", "name"))));
+
     }
 }
