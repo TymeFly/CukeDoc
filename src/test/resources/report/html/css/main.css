@@ -193,6 +193,11 @@ tr:nth-child(odd) {
   vertical-align: top;
 }
 
+td {
+  padding-left: 20px;
+  text-indent: -10px;
+}
+
 .contentBody {
   color : #4a6782;
   text-decoration: none;
