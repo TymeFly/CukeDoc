@@ -14,6 +14,7 @@ import cucumber.doc.model.TypeModel;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import j2html.tags.Tag;
+import j2html.tags.Text;
 
 import static j2html.TagCreator.a;
 import static j2html.TagCreator.b;
@@ -49,6 +50,7 @@ class TypePageBuilder implements PageBuilder {
         i(
           text('<' + Translate.message(LanguageKey.CLASS_ARGUMENT) + '>')
         ).renderFormatted();
+
 
     private final TypeModel typeModel;
 
@@ -93,7 +95,7 @@ class TypePageBuilder implements PageBuilder {
                 div(
                   h5(Translate.message(LanguageKey.GENERAL_DESCRIPTION)).withClass("elementSubtitle"),
                   span(
-                    rawHtml(HtmlUtils.cleanDescription(typeModel.getDescription()))
+                    rawHtml(HtmlUtils.cleanDescription(typeModel.getSummary()))
                   ).withClass("implementationDescription")
                 ).withClass("implementationElement")
               ).withClass("descriptionContainer")
@@ -131,8 +133,8 @@ class TypePageBuilder implements PageBuilder {
                   ).withHref("javascript:showPanel('mappingTable', 'mappingPanel', 'regExPanel');")
                 ).withClasses("mappingTable", "regExPanel"),
                 tbody(
-                  mappingPanel("featurePanel", MappingModel::getFriendlyMapping),
-                  mappingPanel("regExPanel", MappingModel::getAnnotationText)
+                  mappingPanel("featurePanel", text(""), text(" "), MappingModel::getFriendlyMapping),
+                  mappingPanel("regExPanel", text("@"), text(""), MappingModel::getAnnotationText)
                 ).withClass("contentBody")
               ).withClass("summaryTypes")
             ).withClass("contentContainer");
@@ -141,13 +143,18 @@ class TypePageBuilder implements PageBuilder {
 
     @Nonnull
     private DomContent mappingPanel(@Nonnull String panelName,
+                                    @Nonnull Text prefix,
+                                    @Nonnull Text separator,
                                     @Nonnull Function<MappingModel, String> mappingName) {
         return each(typeModel.getImplementations(), method ->
             each(method.getMappings(), mapping ->
               tr(
                 td(
                   a(
-                    join(i(mapping.getVerb()), " ", b(mappingName.apply(mapping)))
+                    i(prefix, text(mapping.getVerb())),
+                    separator,
+                    b(mappingName.apply(mapping))
+
                   ).withHref("#" + method.getUniqueId())
                 ).withClass("colTypes")
               ).withClasses(panelName, "mappingPanel")
@@ -219,7 +226,7 @@ class TypePageBuilder implements PageBuilder {
                       b(mapping.getFriendlyMapping())
                     ).attr("title",
                            Translate.message(LanguageKey.CLASS_HOVER_ANNOTATION) + ":\n  @" +
-                           mapping.getVerb() + " " + mapping.getAnnotationText())
+                                             mapping.getVerb() + mapping.getAnnotationText())
                   )
               )
             ).withClass("implementationElement");
