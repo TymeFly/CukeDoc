@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -89,7 +90,9 @@ public class TextFileChecker implements FileChecker {
         List<String> expected = readFile(expectedFile);
         List<String> actual = readFile(actualFile);
 
-        assertEquals("File size mismatch", expected.size(), actual.size());
+        assertTrue("File size mismatch. Expected file " + expectedFile + " has " + expected.size() + " lines," +
+                        " but actual file " + actualFile + " has " + actual.size() + " lines.",
+                   (expected.size() == actual.size()));
 
         for (int line = 0; line < expected.size(); line++) {
             String expectedRaw = expected.get(line);
