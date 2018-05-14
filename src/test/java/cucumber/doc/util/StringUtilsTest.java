@@ -21,6 +21,13 @@ public class StringUtilsTest {
         Assert.assertEquals("Two words", "Hello.", StringUtils.firstSentence("Hello. World"));
         Assert.assertEquals("Dots In Word", "Hello.World", StringUtils.firstSentence("Hello.World"));
         Assert.assertEquals("Other punctuation", "Hello!", StringUtils.firstSentence("Hello! World."));
+
+        Assert.assertEquals("\\n new line", "Hello!", StringUtils.firstSentence("Hello!\nWorld."));
+        Assert.assertEquals("\\r new line", "Hello!", StringUtils.firstSentence("Hello!\rWorld."));
+        Assert.assertEquals("\\n\\r new line", "Hello!", StringUtils.firstSentence("Hello!\n\rWorld."));
+
+        Assert.assertEquals("tab at end of sentence", "Hello!", StringUtils.firstSentence("Hello!\tWorld."));
+        Assert.assertEquals("tab and space", "Hi, Hello!", StringUtils.firstSentence("Hi, Hello!\tWorld."));
     }
 
 

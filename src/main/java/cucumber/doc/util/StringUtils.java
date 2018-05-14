@@ -14,7 +14,9 @@ import cucumber.doc.annotation.VisibleForTesting;
  * String utility functions.
  */
 public class StringUtils {
-    private static final Set<String> END_OF_SENTENCE = SetUtils.toUnmodifiableSet(". ", "! ", "? ");
+    private static final Set<String> END_OF_SENTENCE =
+        SetUtils.toUnmodifiableSet(". ", "! ", "? ",
+                                   ".\n", "!\n", "?\n");
 
 
     /** Hide utility class constructor */
@@ -29,6 +31,9 @@ public class StringUtils {
      */
     @Nonnull
     public static String firstSentence(@Nonnull String text) {
+        text = text.replace('\t', ' ')
+                   .replace('\r', '\n');
+
         int index = text.length() - 1;
 
         for (String marker : END_OF_SENTENCE) {
@@ -37,7 +42,9 @@ public class StringUtils {
             index = (found == -1 ? index : Math.min(found, index));
         }
 
-        return text.substring(0, index + 1);
+        text = text.substring(0, index + 1);
+
+        return text;
     }
 
 
