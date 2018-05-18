@@ -26,7 +26,6 @@ class HtmlUtils {
         if (description == null) {
             description = "";
         } else {
-            description = description.replaceAll(" {2,}", " ");
             description = cleanDescription(description, "code", "<code>", "</code>", null);
             description = cleanDescription(description, "link", "<code>", "</code>", HtmlUtils::cleanLink);
             description = cleanDescription(description, "", "", "", null);
@@ -74,19 +73,22 @@ class HtmlUtils {
                                            @Nonnull String end,
                                            @Nullable Function<String, String> cleanContent) {
         // String manipulation is a loop isn't good, but in practice this method isn't slow enough to need refactoring
-        boolean allTags = tag.isEmpty();
-        tag = "{@" + tag + (allTags ? "" : " ");
+        tag = "{@" + tag;
 
         int startIndex = description.indexOf(tag);
         while (startIndex != -1) {
-            int textIndex = description.indexOf(" ", startIndex);
+            int textIndex = description.replaceAll("\\s", " ").indexOf(" ", startIndex);
             int endIndex = (textIndex == -1 ? -1 : description.indexOf("}", textIndex));
 
             if (endIndex == -1) {
                 break;
             }
 
-            String text = description.substring(textIndex, endIndex).trim();
+            if (description.charAt(textIndex) == ' ') {
+                textIndex++;
+            }
+
+            String text = description.substring(textIndex, endIndex);
             text = (cleanContent == null ? text : cleanContent.apply(text));
 
             description = description.substring(0, startIndex) +

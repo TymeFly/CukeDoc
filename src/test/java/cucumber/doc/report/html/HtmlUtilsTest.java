@@ -26,6 +26,23 @@ public class HtmlUtilsTest {
         Assert.assertEquals("local link", "<code>alf</code>", HtmlUtils.cleanDescription("{@link #alf}"));
         Assert.assertEquals("class link", "<code>a.b.c</code>", HtmlUtils.cleanDescription("{@link a.b.c}"));
         Assert.assertEquals("link into class", "<code>a.b.c.d</code>", HtmlUtils.cleanDescription("{@link a.b.c#d}"));
+        Assert.assertEquals(
+                    "Preformatted",
+                            "A description. Table example\n" +
+                                    " <pre><code>\n" +
+                                    "    | Key         | Value  |\n" +
+                                    "    | Key123456   | 123456 |\n" +
+                                    "    | abc         | 123    |\n" +
+                                    " </code>\n" +
+                                    " </pre>",
+                    HtmlUtils.cleanDescription(
+                            "A description. Table example\n" +
+                            " <pre>{@code\n" +
+                            "    | Key         | Value  |\n" +
+                            "    | Key123456   | 123456 |\n" +
+                            "    | abc         | 123    |\n" +
+                            " }\n" +
+                            " </pre>"));
     }
 
 

@@ -119,7 +119,6 @@ class Friendly {
     static String description(@Nullable String description) {
         if (Check.hasText(description)) {
             description = description.trim();
-            description = description.replaceAll(" {2,}", " ");
             description = StringUtils.capitalise(description);
         }
 

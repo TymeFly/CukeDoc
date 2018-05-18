@@ -36,13 +36,11 @@ public class FriendlyTest {
         Assert.assertEquals("Empty Description", "", Friendly.description(""));
         Assert.assertEquals("No Change required", "Hello world.", Friendly.description("Hello world."));
         Assert.assertEquals("Trim", "Hello world.", Friendly.description("  Hello world.  "));
-        Assert.assertEquals("Remove additional white space", "Hello world.", Friendly.description("Hello  world."));
         Assert.assertEquals("Start with Caps", "Hello world.", Friendly.description("hello world."));
         Assert.assertEquals("Inner Caps", "Hello. World.", Friendly.description("Hello. world."));
         Assert.assertEquals("Using !", "Hello! World.", Friendly.description("Hello! world."));
         Assert.assertEquals("Starts with Stop", ". Hello world.", Friendly.description(". Hello world."));
         Assert.assertEquals("Stop in word", "He.llo world", Friendly.description("He.llo world"));
-        Assert.assertEquals("Multiple changes", ". He.llo! World", Friendly.description(".  he.llo!   world   "));
     }
 
 
