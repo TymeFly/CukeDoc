@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cuke-doc>
+    <meta>
+        <version>1.0.1</version>
+        <date>dd MMM yyyy at hh:mm</date>
+    </meta>
+    <notes>
+        <note>
+            <format>HTML</format>
+        </note>
+    </notes>
+    <types>
+    </types>
+</cuke-doc>

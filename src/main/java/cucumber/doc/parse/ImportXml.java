@@ -70,9 +70,9 @@ class ImportXml {
 
         if (notes != null) {
             for (Element note : getChildren(notes, "note")) {
-                NoteModel typeModel = importNote(note);
+                NoteModel noteModel = importNote(note);
 
-                builder.withNote(typeModel);
+                builder.withNote(noteModel);
             }
         }
     }
@@ -127,6 +127,7 @@ class ImportXml {
         if (implementations != null) {
             for (Element type : getChildren(implementations, "implementation")) {
                 ImplementationModel implementation = importImplementation(type);
+
                 builder.withImplementation(implementation);
             }
         }

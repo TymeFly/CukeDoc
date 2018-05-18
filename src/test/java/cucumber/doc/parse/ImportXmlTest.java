@@ -2,23 +2,47 @@ package cucumber.doc.parse;
 
 import java.net.URL;
 
+import cucumber.doc.exception.CukeDocException;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.ImplementationModel;
 import cucumber.doc.model.TypeModel;
 import cucumber.doc.util.NoteFormat;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Unit test for {@link ImportXml}
  */
 public class ImportXmlTest {
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
 
     /**
      * Unit test {@link ImportXml#importXml(ApplicationModel.Builder, String)}
      */
     @Test
-    public void test_ImportXml() {
+    public void test_ImportXml_Min() {
+        URL resource = getClass().getClassLoader().getResource("report/xml/sample-min.xml");
+        String path = resource.getFile();
+
+        ApplicationModel.Builder builder = new ApplicationModel.Builder();
+
+        new ImportXml().importXml(builder, path);
+        ApplicationModel actual = builder.build();
+
+        Assert.assertEquals("Unexpected notes count", 0, actual.getNotes().size());
+        Assert.assertEquals("Unexpected type count", 0, actual.getTypes().size());
+    }
+
+
+    /**
+     * Unit test {@link ImportXml#importXml(ApplicationModel.Builder, String)}
+     */
+    @Test
+    public void test_ImportXml_HappyPath() {
         URL resource = getClass().getClassLoader().getResource("report/xml/sample.xml");
         String path = resource.getFile();
 
@@ -113,4 +137,90 @@ public class ImportXmlTest {
         Assert.assertEquals("Unexpected imp3 mapping2 RegEx", "mapping3-b", implementation.getMappings().get(1).getRegEx());
         Assert.assertEquals("Unexpected imp3 parameters", 0, implementation.getParameters().size());
     }
+
+
+    /**
+     * Unit test {@link ImportXml#importXml(ApplicationModel.Builder, String)}
+     */
+    @Test
+    public void test_ImportXml_Truncated() {
+        expectedException.expect(CukeDocException.class);
+        expectedException.expectMessage("Malformed XML");
+
+        URL resource = getClass().getClassLoader().getResource("report/xml/sample-truncated.xml");
+        String path = resource.getFile();
+
+        ApplicationModel.Builder builder = new ApplicationModel.Builder();
+
+        new ImportXml().importXml(builder, path);
+    }
+
+
+    /**
+     * Unit test {@link ImportXml#importXml(ApplicationModel.Builder, String)}
+     */
+    @Test
+    public void test_ImportXml_No_Types() {
+        expectedException.expect(CukeDocException.class);
+        expectedException.expectMessage("Malformed XML: Missing 'types' element");
+
+        URL resource = getClass().getClassLoader().getResource("report/xml/sample-no-types.xml");
+        String path = resource.getFile();
+
+        ApplicationModel.Builder builder = new ApplicationModel.Builder();
+
+        new ImportXml().importXml(builder, path);
+    }
+
+
+    /**
+     * Unit test {@link ImportXml#importXml(ApplicationModel.Builder, String)}
+     */
+    @Test
+    public void test_ImportXml_Duplicate_Types() {
+        expectedException.expect(CukeDocException.class);
+        expectedException.expectMessage("Malformed XML: Duplicate 'types' element");
+
+        URL resource = getClass().getClassLoader().getResource("report/xml/sample-duplicate-types.xml");
+        String path = resource.getFile();
+
+        ApplicationModel.Builder builder = new ApplicationModel.Builder();
+
+        new ImportXml().importXml(builder, path);
+    }
+
+
+    /**
+     * Unit test {@link ImportXml#importXml(ApplicationModel.Builder, String)}
+     */
+    @Test
+    public void test_ImportXml_Missing_Note_Text() {
+        expectedException.expect(CukeDocException.class);
+        expectedException.expectMessage("Malformed XML: Missing element 'text'");
+
+        URL resource = getClass().getClassLoader().getResource("report/xml/sample-missing-note.xml");
+        String path = resource.getFile();
+
+        ApplicationModel.Builder builder = new ApplicationModel.Builder();
+
+        new ImportXml().importXml(builder, path);
+    }
+
+
+    /**
+     * Unit test {@link ImportXml#importXml(ApplicationModel.Builder, String)}
+     */
+    @Test
+    public void test_ImportXml_Duplicate_Note_Text() {
+        expectedException.expect(CukeDocException.class);
+        expectedException.expectMessage("Malformed XML: Duplicate element for 'text");
+
+        URL resource = getClass().getClassLoader().getResource("report/xml/sample-duplicate-note.xml");
+        String path = resource.getFile();
+
+        ApplicationModel.Builder builder = new ApplicationModel.Builder();
+        new ImportXml().importXml(builder, path);
+    }
+
+
 }
