@@ -31,8 +31,6 @@ import cucumber.doc.util.StringUtils;
  * Extract the data we are interested in from a {@link RootDoc} and store it in a {@link TypeModel}
  */
 class Scanner {
-    private static final String TABLE_TYPE = "cucumber.api.DataTable";
-
     private final Set<String> annotations;
     private final RootDoc root;
 
@@ -197,7 +195,7 @@ class Scanner {
                 String comment = comments.get(name);
                 comment = Check.hasText(comment) ? comment : name;
 
-                if (TABLE_TYPE.equals(type)) {
+                if (index == captureGroups.size()) {
                     builder.withTable(name, comment);
                 } else {
                     String captureGroup = (index >= captureGroups.size() ? "<unknown>" : captureGroups.get(index++));
