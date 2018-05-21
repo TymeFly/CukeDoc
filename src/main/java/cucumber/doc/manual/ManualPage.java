@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
     private class Entry {
         private String name;
-        private String separator = "";
         private List<String> description = new ArrayList<>();
 
         Entry(@Nonnull String commandLine) {
@@ -21,8 +20,7 @@ public class ManualPage implements InitialBuilder, OptionBuilder, PageBuilder {
         }
 
         void addArgument(@Nonnull String argument) {
-            name = name  + separator + " <" + argument + ">";
-            separator = ",";
+            name += " <" + argument + ">";
             ManualPage.this.maxCommandLine = Math.max(maxCommandLine, name.length());
         }
 

@@ -14,6 +14,7 @@ import cucumber.doc.model.MappingModel;
 import cucumber.doc.util.FileUtils;
 import j2html.tags.DomContent;
 import j2html.tags.Tag;
+import j2html.tags.Text;
 
 import static j2html.TagCreator.a;
 import static j2html.TagCreator.b;
@@ -140,8 +141,8 @@ class OverviewPageBuilder implements PageBuilder {
                   th(Translate.message(LanguageKey.GENERAL_MAPPING)).withClass("colMappings"),
                   th(Translate.message(LanguageKey.OVERVIEW_TYPE)).withClass("colTypes")
                 ),
-                mappingPanel("featurePanel", MappingModel::getFriendlyMapping),
-                mappingPanel("regExPanel", MappingModel::getAnnotationText)
+                mappingPanel("featurePanel", text(""), text(" "), MappingModel::getFriendlyMapping),
+                mappingPanel("regExPanel", text("@"), text(""), MappingModel::getAnnotationText)
               ).withClass("contentBody")
             ).withClass("summaryMapping")
           ).withClass("contentContainer");
@@ -150,14 +151,16 @@ class OverviewPageBuilder implements PageBuilder {
 
     @Nonnull
     private DomContent mappingPanel(@Nonnull String panelName,
+                                    @Nonnull Text prefix,
+                                    @Nonnull Text separator,
                                     @Nonnull Function<MappingModel, String> mappingName) {
         return
             each(model.getMappings(), mapping ->
               tr(
                 td(
                   a(
-                    i(mapping.getVerb()),
-                    text(" "),
+                    i(prefix, text(mapping.getVerb())),
+                    separator,
                     b(mappingName.apply(mapping))
                   ).withHref(mapping.getMappingType().getQualifiedName() + ".html#"
                                     + mapping.getImplementation().getUniqueId())

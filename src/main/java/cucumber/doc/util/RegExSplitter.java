@@ -119,7 +119,9 @@ public class RegExSplitter {
      * @return          next character in the {@link #regEx} to process
      */
     private char parseNonCaptureGroup() {
-        return parse(')');
+        parse(')');
+
+        return nextChar();
     }
 
 

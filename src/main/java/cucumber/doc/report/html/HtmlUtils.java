@@ -5,27 +5,48 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Utility class for generating cleaned up versions of the text for a HTML report
+ */
 class HtmlUtils {
     private HtmlUtils() {
     }
 
+
     /**
      * Remove embedded tags in the form {@code {@____} from descriptions. As the translation may introduce
      * HTML sequences the returned string should be added to the page using {@link j2html.TagCreator#rawHtml}.
-     * Note that nested emdedded tags are not currently handled
+     * Note that nested embedded tags are not currently handled
      * @param description       raw form of the description
-     * @return                  A cleaned up version of the description which may contain embedded HTML
+     * @return                  A cleaned up version of the description which may contain embedded HTML.
+     *                              An empty string is returned if {@code description} is {@literal null}
      */
-    @Nullable
+    @Nonnull
     static String cleanDescription(@Nullable String description) {
-        if (description != null) {
-            description = description.replaceAll(" {2,}", " ");
+        if (description == null) {
+            description = "";
+        } else {
             description = cleanDescription(description, "code", "<code>", "</code>", null);
             description = cleanDescription(description, "link", "<code>", "</code>", HtmlUtils::cleanLink);
             description = cleanDescription(description, "", "", "", null);
         }
 
         return description;
+    }
+
+
+    /**
+     * Similar to {@link #cleanDescription(String)}, but {@code defaultValue} is returned instead of a
+     * blank string
+     * @param description       raw form of the description
+     * @param defaultValue      String to return if description is cleaned to an empty string
+     * @return                  A cleaned up version of the description which may contain embedded HTML.
+     */
+    @Nonnull
+    static String cleanDescription(@Nullable String description, @Nonnull String defaultValue) {
+        String result = cleanDescription(description);
+
+        return (result.isEmpty() ? defaultValue : result);
     }
 
 
@@ -51,20 +72,23 @@ class HtmlUtils {
                                            @Nonnull String start,
                                            @Nonnull String end,
                                            @Nullable Function<String, String> cleanContent) {
-        // String manipulation is a loop isn't great, but in practice this method isn't slow enough to need refactoring
-        boolean allTags = tag.isEmpty();
-        tag = "{@" + tag + (allTags ? "" : " ");
+        // String manipulation is a loop isn't good, but in practice this method isn't slow enough to need refactoring
+        tag = "{@" + tag;
 
         int startIndex = description.indexOf(tag);
         while (startIndex != -1) {
-            int textIndex = description.indexOf(" ", startIndex);
+            int textIndex = description.replaceAll("\\s", " ").indexOf(" ", startIndex);
             int endIndex = (textIndex == -1 ? -1 : description.indexOf("}", textIndex));
 
             if (endIndex == -1) {
                 break;
             }
 
-            String text = description.substring(textIndex, endIndex).trim();
+            if (description.charAt(textIndex) == ' ') {
+                textIndex++;
+            }
+
+            String text = description.substring(textIndex, endIndex);
             text = (cleanContent == null ? text : cleanContent.apply(text));
 
             description = description.substring(0, startIndex) +

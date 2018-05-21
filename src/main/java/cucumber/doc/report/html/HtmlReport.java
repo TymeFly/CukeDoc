@@ -1,8 +1,5 @@
 package cucumber.doc.report.html;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
@@ -17,6 +14,7 @@ import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.TypeModel;
 import cucumber.doc.report.ReportBuilder;
 import cucumber.doc.util.Check;
+import cucumber.doc.util.DateUtils;
 import cucumber.doc.util.FileUtils;
 import cucumber.doc.util.Trace;
 import j2html.tags.DomContent;
@@ -55,17 +53,14 @@ public class HtmlReport implements ReportBuilder {
      * @param model         application model
      */
     public HtmlReport(@Nonnull ApplicationModel model) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        ZoneOffset zone = OffsetDateTime.now().getOffset();
-
         this.model = model;
-        buildDate = Date.from(localDateTime.toInstant(zone));
+        this.buildDate = DateUtils.localDate();
     }
 
 
     @Override
     public void writeReport() {
-        buildClasses();
+        writeTypes();
         writePage(new OverviewPageBuilder(model), Translate.message(LanguageKey.OVERVIEW_TITLE), "index.html");
         writePage(new NotesPageBuilder(model), Translate.message(LanguageKey.NOTES_TITLE), "notes.html");
 
@@ -73,7 +68,7 @@ public class HtmlReport implements ReportBuilder {
     }
 
 
-    private void buildClasses() {
+    private void writeTypes() {
         for (TypeModel type : model.getTypes()) {
             writePage(new TypePageBuilder(type),
                       type.getFriendlyName(),

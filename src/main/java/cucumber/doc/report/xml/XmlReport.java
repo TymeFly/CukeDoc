@@ -22,10 +22,12 @@ import cucumber.doc.exception.CukeDocException;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.ImplementationModel;
 import cucumber.doc.model.MappingModel;
+import cucumber.doc.model.NoteModel;
 import cucumber.doc.model.ParameterModel;
 import cucumber.doc.model.TableModel;
 import cucumber.doc.model.TypeModel;
 import cucumber.doc.report.ReportBuilder;
+import cucumber.doc.util.DateUtils;
 import cucumber.doc.util.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,7 +38,10 @@ import org.w3c.dom.Text;
  * A report builder for pages of XML
  */
 public class XmlReport implements ReportBuilder {
+    private static final String VERSION = "1.0.1";
+
     private final ApplicationModel model;
+
 
     /**
      * Create a Report for pages of HTML
@@ -93,23 +98,44 @@ public class XmlReport implements ReportBuilder {
         Element element = document.createElement("cuke-doc");
         document.appendChild(element);
 
+        processMeta(document, element);
         processNotes(document, element, model);
         processTypes(document, element, model);
     }
 
 
+    private void processMeta(@Nonnull Document document, @Nonnull Element parent) {
+        Element element = document.createElement("meta");
+
+        addNode(document, element, "version", VERSION);
+        addNode(document, element, "date", DateUtils.localDate().toString());
+
+        parent.appendChild(element);
+    }
+
+
     private void processNotes(@Nonnull Document document, @Nonnull Element parent, @Nonnull ApplicationModel model) {
-        List<String> notes = model.getNotes();
+        List<NoteModel> notes = model.getNotes();
 
         if (!notes.isEmpty()) {
             Element element = document.createElement("notes");
 
-            for (String note : notes) {
-                addNode(document, element, "note", note);
+            for (NoteModel note : notes) {
+                processNote(document, element, note);
             }
 
             parent.appendChild(element);
         }
+    }
+
+
+    private void processNote(@Nonnull Document document, @Nonnull Element parent, @Nonnull NoteModel model) {
+        Element element = document.createElement("note");
+
+        addNode(document, element, "text", model.getText());
+        addNode(document, element, "format", model.getFormat().name());
+
+        parent.appendChild(element);
     }
 
 
@@ -131,6 +157,17 @@ public class XmlReport implements ReportBuilder {
         addNode(document, element, "description", model.getDescription());
         addNode(document, element, "since", model.getSince());
 
+        processImplementations(document, model, element);
+
+        parent.appendChild(element);
+    }
+
+
+    private void processImplementations(@Nonnull Document document,
+                                        @Nonnull TypeModel model,
+                                        @Nonnull Element parent) {
+        Element element = document.createElement("implementations");
+
         for (ImplementationModel implementation : model.getImplementations()) {
             processImplementation(document, element, implementation);
         }
@@ -148,13 +185,21 @@ public class XmlReport implements ReportBuilder {
         addNode(document, element, "description", model.getDescription());
         addNode(document, element, "since", model.getSince());
 
+        processMappings(document, model, element);
+        processParameters(document, model, element);
+
         if (model.getTable() != null) {
             processTable(document, element, model.getTable());
         }
 
-        for (ParameterModel parameter : model.getParameters()) {
-            processParameter(document, element, parameter);
-        }
+        parent.appendChild(element);
+    }
+
+
+    private void processMappings(@Nonnull Document document,
+                                 @Nonnull ImplementationModel model,
+                                 @Nonnull Element parent) {
+        Element element = document.createElement("mappings");
 
         for (MappingModel mapping : model.getMappings()) {
             processMapping(document, element, mapping);
@@ -164,11 +209,24 @@ public class XmlReport implements ReportBuilder {
     }
 
 
-    private void processTable(@Nonnull Document document, @Nonnull Element parent, @Nonnull TableModel model) {
-        Element element = document.createElement("table");
+    private void processMapping(@Nonnull Document document, @Nonnull Element parent, @Nonnull MappingModel model) {
+        Element element = document.createElement("mapping");
 
-        addNode(document, element, "name", model.getName());
-        addNode(document, element, "description", model.getDescription());
+        addNode(document, element, "verb", model.getVerb());
+        addNode(document, element, "regEx", model.getRegEx());
+
+        parent.appendChild(element);
+    }
+
+
+    private void processParameters(@Nonnull Document document,
+                                   @Nonnull ImplementationModel model,
+                                   @Nonnull Element parent) {
+        Element element = document.createElement("parameters");
+
+        for (ParameterModel parameter : model.getParameters()) {
+            processParameter(document, element, parameter);
+        }
 
         parent.appendChild(element);
     }
@@ -186,11 +244,11 @@ public class XmlReport implements ReportBuilder {
     }
 
 
-    private void processMapping(@Nonnull Document document, @Nonnull Element parent, @Nonnull MappingModel model) {
-        Element element = document.createElement("mapping");
+    private void processTable(@Nonnull Document document, @Nonnull Element parent, @Nonnull TableModel model) {
+        Element element = document.createElement("table");
 
-        addNode(document, element, "verb", model.getVerb());
-        addNode(document, element, "regEx", model.getRegEx());
+        addNode(document, element, "name", model.getName());
+        addNode(document, element, "description", model.getDescription());
 
         parent.appendChild(element);
     }

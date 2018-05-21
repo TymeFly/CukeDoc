@@ -79,8 +79,8 @@ public class ManualPageTest {
 
         Assert.assertEquals("unexpected page",
                             "With Arguments" + System.lineSeparator() +
-                            "  option1 <arg1>          description1" + System.lineSeparator() +
-                            "  option2 <arg1>, <arg2>  description2" + System.lineSeparator(),
+                            "  option1 <arg1>         description1" + System.lineSeparator() +
+                            "  option2 <arg1> <arg2>  description2" + System.lineSeparator(),
                              actual);
     }
 
@@ -130,13 +130,13 @@ public class ManualPageTest {
 
         Assert.assertEquals("Test Everything",
                             "Test Everything" + System.lineSeparator() +
-                            "  option1                          Desc1" + System.lineSeparator() +
-                            "  option2, option3                 Desc2-1" + System.lineSeparator() +
-                            "                                   Desc2-2" + System.lineSeparator() +
-                            "  option4 <arg1>                   Desc3" + System.lineSeparator() +
-                            "  option5, option6 <arg1>, <arg2>  Desc4-1" + System.lineSeparator() +
-                            "                                   Desc4-2" + System.lineSeparator() +
-                            "                                   Desc4-3" + System.lineSeparator(),
+                            "  option1                         Desc1" + System.lineSeparator() +
+                            "  option2, option3                Desc2-1" + System.lineSeparator() +
+                            "                                  Desc2-2" + System.lineSeparator() +
+                            "  option4 <arg1>                  Desc3" + System.lineSeparator() +
+                            "  option5, option6 <arg1> <arg2>  Desc4-1" + System.lineSeparator() +
+                            "                                  Desc4-2" + System.lineSeparator() +
+                            "                                  Desc4-3" + System.lineSeparator(),
                              actual);
    }
 

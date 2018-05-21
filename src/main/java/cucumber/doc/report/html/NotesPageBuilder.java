@@ -6,12 +6,15 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import cucumber.doc.exception.CukeDocException;
 import cucumber.doc.model.ApplicationModel;
+import cucumber.doc.model.NoteModel;
 import j2html.tags.DomContent;
 
-import static j2html.TagCreator.body;
+import static j2html.TagCreator.div;
 import static j2html.TagCreator.each;
 import static j2html.TagCreator.p;
+import static j2html.TagCreator.pre;
 import static j2html.TagCreator.rawHtml;
 
 /**
@@ -31,25 +34,49 @@ class NotesPageBuilder implements PageBuilder {
         return EnumSet.complementOf(EnumSet.of(MenuItem.NOTES));
     }
 
+
     @Nullable
     @Override
     public DomContent buildPage() {
-        List<String> notes = model.getNotes();
+        List<NoteModel> notes = model.getNotes();
         DomContent result;
 
         if (notes.isEmpty()) {
             result = null;
         } else {
             result =
-              body(
+              div(
                 each(notes, note ->
                   p(
-                    rawHtml(note)
+                    getContent(note)
                   ).withClass("notes")
                 )
-              );
+              ).withId("docBody");
         }
 
         return result;
+    }
+
+
+    @Nonnull
+    private DomContent getContent(@Nonnull NoteModel note) {
+        DomContent content;
+
+        switch (note.getFormat()) {
+            case FEATURE:
+            case TEXT:
+            case PROPERTIES:
+                content = pre(note.getText());
+                break;
+
+            case HTML:
+                content = rawHtml(note.getText());
+                break;
+
+            default:
+                throw new CukeDocException("Unexpected format '%s'", note.getFormat());
+        }
+
+        return content;
     }
 }

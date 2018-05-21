@@ -4,7 +4,7 @@
 
     <groupId>com.cucumber</groupId>
     <artifactId>cuke-doc</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>cuke-doc</name>
 
     <properties>
@@ -16,6 +16,7 @@
         <mockito.version>1.10.19</mockito.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sourceEncoding>UTF-8</sourceEncoding>
+        <cucumberjvm.version>2.4.0</cucumberjvm.version>
     </properties>
 
     <dependencies>
@@ -62,6 +63,20 @@
             <groupId>com.github.stefanbirkner</groupId>
             <artifactId>system-rules</artifactId>
             <version>1.17.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Integration Tests -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>${cucumberjvm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumberjvm.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

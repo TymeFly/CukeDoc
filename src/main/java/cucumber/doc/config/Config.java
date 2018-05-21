@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,6 +17,7 @@ import cucumber.doc.manual.ManualPage;
 import cucumber.doc.report.Format;
 import cucumber.doc.util.EnumUtils;
 import cucumber.doc.util.FileUtils;
+import cucumber.doc.util.NoteFormat;
 import cucumber.doc.util.Preconditions;
 import cucumber.doc.util.StringUtils;
 import cucumber.doc.util.Trace;
@@ -24,6 +26,8 @@ import cucumber.doc.util.Trace;
  * CukeDoc configuration. As far as we can, the command line options will match those defined by JavaDoc
  */
 public class Config {
+    private static final EnumSet<Format> DEFAULT_FORMATS = EnumSet.of(Format.HTML, Format.BASIC);
+
     private static Config instance = newInstance();
 
     private String title = "CukeDoc";
@@ -38,7 +42,7 @@ public class Config {
     private boolean trace = false;
     private boolean configured = false;
     private List<String> notesPath = new ArrayList<>();
-    private EnumSet<Format> formats = EnumSet.allOf(Format.class);
+    private EnumSet<Format> formats = DEFAULT_FORMATS;
     private boolean formatsSet = false;
 
 
@@ -48,7 +52,8 @@ public class Config {
 
 
     /**
-     * Factory method used only for Unit testing.
+     * Factory method used only for Unit testing that will return a new instance of the config object with
+     * reset defaults;
      * @return a new instance of the 'singleton' Config object
      */
     @Nonnull
@@ -56,7 +61,7 @@ public class Config {
     public static Config newInstance() {
         instance = new Config();
 
-        return getInstance();
+        return instance;
     }
 
 
@@ -160,7 +165,7 @@ public class Config {
                     formats = EnumSet.noneOf(Format.class);
                 }
 
-                formats.addAll(EnumUtils.toEnums(Format.class, StringUtils.toList(value)));
+                formats.addAll(EnumUtils.toEnums(Format.class, StringUtils.asList(value)));
             } else if ("-icon".equals(key)) {
                 iconPath = value;
                 valid &= validatePath(key, value, reporter);
@@ -197,12 +202,12 @@ public class Config {
             ManualPage.create("Cuke-Doc options:")
                 .withOptions("-i18n")
                     .withArgument("locale")
-                    .withDescription("Language of generated documentation. Valid locales are:")
+                    .withDescription("Language of generated documentation. Valid languages are:")
                     .withDescription(StringUtils.asString(EnumSet.allOf(I18n.class)))
                 .withOptions("-link")
                     .withArgument("path")
-                    .withDescription("Path to an XML report from another project." +
-                                        " The details will be added to this project")
+                    .withDescription("Path to an XML report from another project.")
+                    .withDescription("The details will be added to this project")
                     .withDescription("Multiple links can be added")
                 .withOptions("-windowtitle")
                     .withArgument("text")
@@ -221,14 +226,17 @@ public class Config {
                     .withDescription("Destination directory for output files")
                 .withOptions("-format")
                     .withArgument("formats")
-                    .withDescription("Comma separated list containing one or more of 'BASIC', 'XML' or 'HTML'")
-                    .withDescription("Multiple formats can be specified")
+                    .withDescription("Determines which types of report are generated. Valid formats are:")
+                    .withDescription(StringUtils.asString(Format.values()).toLowerCase())
+                    .withDescription("Defaults to " + StringUtils.asString(DEFAULT_FORMATS).toLowerCase())
                 .withOptions("-icon")
                     .withArgument("path")
                     .withDescription("Browser window favicon for the documentation")
                 .withOptions("-notes")
                     .withArgument("path")
-                    .withDescription("Optional set of notes that will be included in the report")
+                    .withDescription("Optional set of notes that will be included in the report.")
+                    .withDescription("The types of file that can be used are " +
+                                        StringUtils.asString(NoteFormat.values()).toLowerCase())
                     .withDescription("Multiple sets of notes can be specified")
                 .withOptions("-description")
                     .withArgument("path")
@@ -393,7 +401,7 @@ public class Config {
      * @return the required report types
      */
     @Nonnull
-    public EnumSet<Format> getFormats() {
+    public Set<Format> getFormats() {
         Preconditions.checkState(configured, "Config options have not been applied");
 
         return formats;

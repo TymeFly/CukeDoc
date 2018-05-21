@@ -14,7 +14,9 @@ import cucumber.doc.annotation.VisibleForTesting;
  * String utility functions.
  */
 public class StringUtils {
-    private static final Set<String> END_OF_SENTENCE = SetUtils.toUnmodifiableSet(". ", "! ", "? ");
+    private static final Set<String> END_OF_SENTENCE =
+        SetUtils.toUnmodifiableSet(". ", "! ", "? ",
+                                   ".\n", "!\n", "?\n");
 
 
     /** Hide utility class constructor */
@@ -29,6 +31,9 @@ public class StringUtils {
      */
     @Nonnull
     public static String firstSentence(@Nonnull String text) {
+        text = text.replace('\t', ' ')
+                   .replace('\r', '\n');
+
         int index = text.length() - 1;
 
         for (String marker : END_OF_SENTENCE) {
@@ -37,7 +42,9 @@ public class StringUtils {
             index = (found == -1 ? index : Math.min(found, index));
         }
 
-        return text.substring(0, index + 1);
+        text = text.substring(0, index + 1);
+
+        return text;
     }
 
 
@@ -139,8 +146,10 @@ public class StringUtils {
      * Split a comma delimited list into it's component parts, removing any white space
      * @param str       string to split
      * @return          the component parts
+     * @see #asString(Collection)
+     * @see #asString(Object[])
      */
-    public static List<String> toList(@Nonnull String str) {
+    public static List<String> asList(@Nonnull String str) {
         List<String> result;
 
         str = str.trim()
@@ -160,14 +169,26 @@ public class StringUtils {
 
 
     /**
+     * Return a representation of the array as a comma separated list of values. If the array
+     * is empty then an empty list is returned.
+     * @param values        values to be represented in the string
+     * @return              a coma separated list of values.
+     * @see #asList(String)
+     */
+    public static String asString(@Nonnull Object[] values) {
+        return asString(Arrays.asList(values));
+    }
+
+
+    /**
      * Return a representation of the collection as a comma separated list of values. If the collection
      * is empty then an empty list is returned.
      * @param values        values to be represented in the string
      * @return              a coma separated list of values.
+     * @see #asList(String)
      */
     @Nonnull
     public static String asString(@Nonnull Collection<?> values) {
-        // TODO: Unit test me
         StringBuilder builder = new StringBuilder();
         String separator = "";
 

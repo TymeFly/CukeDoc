@@ -380,7 +380,7 @@ public class ConfigTest {
         boolean valid = config.applyOptions(new String[0][], reporter);
 
         Assert.assertTrue("Invalid default options", valid);
-        Assert.assertEquals("Unexpected formats", EnumSet.allOf(Format.class), config.getFormats());
+        Assert.assertEquals("Unexpected formats", EnumSet.of(Format.HTML, Format.BASIC), config.getFormats());
     }
 
 
@@ -389,7 +389,7 @@ public class ConfigTest {
      */
     @Test
     public void test_GetFormats() {
-        boolean valid = config.applyOptions(new String[][]{{"-format", "basic,xml"}, {"-format", "xml"}}, reporter);
+        boolean valid = config.applyOptions(new String[][]{{"-format", "basic,xml"}, {"-format", "xml" }}, reporter);
 
         Assert.assertTrue("Invalid '-format' options", valid);
         Assert.assertEquals("Unexpected formats",
