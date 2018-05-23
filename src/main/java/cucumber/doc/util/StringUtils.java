@@ -265,4 +265,19 @@ public class StringUtils {
 
         return (index == -1 ? str : str.substring(index + delimiter.length()));
     }
+
+
+    /**
+     * Return a string that contains the single {@code character} repeated {@code length} times
+     * @param character         The single character found in the generated string
+     * @param length            Number of times the character is repeated
+     * @return                  {@code character} repeated {@code length} times.
+     */
+    public static String sequence(char character, int length) {
+        char[] buffer = new char[length];
+
+        Arrays.fill(buffer, character);
+
+        return new String(buffer);
+    }
 }

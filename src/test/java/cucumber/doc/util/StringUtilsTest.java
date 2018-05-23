@@ -152,4 +152,16 @@ public class StringUtilsTest {
         Assert.assertEquals("Single", "A", StringUtils.asString(Collections.singleton("A")));
         Assert.assertEquals("Multiple", "1, 2, 3", StringUtils.asString(Arrays.asList(1, 2, 3)));
     }
+
+
+    /**
+     * Unit test {@link StringUtils#sequence}
+     */
+    @Test
+    public void test_Sequence() {
+        Assert.assertEquals("Empty", "", StringUtils.sequence('x', 0));
+        Assert.assertEquals("Single", "x", StringUtils.sequence('x', 1));
+        Assert.assertEquals("Multiple", "xx", StringUtils.sequence('x', 2));
+        Assert.assertEquals("Space", "     ", StringUtils.sequence(' ', 5));
+    }
 }
