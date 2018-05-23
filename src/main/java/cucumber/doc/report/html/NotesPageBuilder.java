@@ -1,7 +1,7 @@
 package cucumber.doc.report.html;
 
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +38,7 @@ class NotesPageBuilder implements PageBuilder {
     @Nullable
     @Override
     public DomContent buildPage() {
-        List<NoteModel> notes = model.getNotes();
+        Collection<NoteModel> notes = model.getNotes();
         DomContent result;
 
         if (notes.isEmpty()) {

@@ -10,11 +10,17 @@ Class2:
 
 --==| Notes |==--
 
-Line1
-Line3
+name-1
+~~~~~~
 
+Note 1.1
+Note 1.2
+Note 3
 
-note2
+name-2
+~~~~~~
+
+Note 2
 
 --------
 Built on dd MMM yyyy at hh:mm

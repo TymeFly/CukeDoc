@@ -15,6 +15,7 @@ import com.sun.javadoc.DocErrorReporter;
 import cucumber.doc.annotation.VisibleForTesting;
 import cucumber.doc.manual.ManualPage;
 import cucumber.doc.report.Format;
+import cucumber.doc.util.Check;
 import cucumber.doc.util.EnumUtils;
 import cucumber.doc.util.FileUtils;
 import cucumber.doc.util.NoteFormat;
@@ -41,7 +42,7 @@ public class Config {
     private I18n i18n = I18n.EN;
     private boolean trace = false;
     private boolean configured = false;
-    private List<String> notesPath = new ArrayList<>();
+    private List<NoteDescription> notes = new ArrayList<>();
     private EnumSet<Format> formats = DEFAULT_FORMATS;
     private boolean formatsSet = false;
 
@@ -104,7 +105,7 @@ public class Config {
         } else if ("-icon".equals(option)) {
             count = 2;
         } else if ("-notes".equals(option)) {
-            count = 2;
+            count = 3;
         } else if ("-trace".equals(option)) {
             trace = true;
             count = 1;
@@ -137,41 +138,49 @@ public class Config {
 
         for (String[] option : options) {
             String key = (option.length != 0 ? option[0] : "");
-            String value = (option.length >= 2 ? option[1] : null);
+            String value1 = (option.length >= 2 ? option[1] : null);
+            String value2 = (option.length >= 3 ? option[2] : null);
 
-            Trace.message("  %s%s", key, (value == null ? "" : ", => " + value));
+            Trace.message("  %s%s%s",
+                key, (value1 == null ? "" : ", => " + value1), (value2 == null ? "" : ", " + value2));
 
             if ("-i18n".equals(key)) {
-                i18n = EnumUtils.toEnum(I18n.class, value);
+                i18n = EnumUtils.toEnum(I18n.class, value1);
             } else if ("-link".equals(key)) {
-                xmlList.add(value);
-                valid &= validatePath(key, value, reporter);
+                xmlList.add(value1);
+                valid &= validatePath(key, value1, reporter);
             } else if ("-windowtitle".equals(key)) {
-                title = value;
+                title = value1;
+                valid &= validateString(key, value1, reporter);
             } else if ("-description".equals(key)) {
-                descriptionPath = value;
-                valid &= validatePath(key, value, reporter);
+                descriptionPath = value1;
+                valid &= validatePath(key, value1, reporter);
             } else if ("-footer".equals(key)) {
-                footer = value;
+                footer = value1;
+                valid &= validateString(key, value1, reporter);
             } else if ("-top".equals(key)) {
-                top = value;
+                top = value1;
+                valid &= validateString(key, value1, reporter);
             } else if ("-bottom".equals(key)) {
-                bottom = value;
+                bottom = value1;
+                valid &= validateString(key, value1, reporter);
             } else if ("-d".equals(key)) {
-                directory = value;
+                directory = value1;
+                valid &= validateString(key, value1, reporter);
             } else if ("-format".equals(key)) {
                 if (!formatsSet) {
                     formatsSet = true;
                     formats = EnumSet.noneOf(Format.class);
                 }
 
-                formats.addAll(EnumUtils.toEnums(Format.class, StringUtils.asList(value)));
+                formats.addAll(EnumUtils.toEnums(Format.class, StringUtils.asList(value1)));
             } else if ("-icon".equals(key)) {
-                iconPath = value;
-                valid &= validatePath(key, value, reporter);
+                iconPath = value1;
+                valid &= validatePath(key, value1, reporter);
             } else if ("-notes".equals(key)) {
-                notesPath.add(value);
-                valid &= validatePath(key, value, reporter);
+                notes.add(new NoteDescription(value1, value2));
+                valid &= validateString(key, value1, reporter);
+                valid &= validatePath(key, value2, reporter);
             } else {
                 // ignore unexpected argument - javaDoc may be using it;
             }
@@ -182,6 +191,17 @@ public class Config {
         Trace.message("Arguments are %s", (valid ? "valid" : "INVALID"));
 
         return valid;
+    }
+
+
+    private boolean validateString(@Nonnull String name, @Nonnull String value, @Nonnull DocErrorReporter reporter) {
+        boolean isValid = Check.hasText(value);
+
+        if (!isValid) {
+            reporter.printError("Argument '" + name + "' is empty");
+        }
+
+        return isValid;
     }
 
 
@@ -227,17 +247,19 @@ public class Config {
                 .withOptions("-format")
                     .withArgument("formats")
                     .withDescription("Determines which types of report are generated. Valid formats are:")
-                    .withDescription(StringUtils.asString(Format.values()).toLowerCase())
+                    .withDescription("  " + StringUtils.asString(Format.values()).toLowerCase())
                     .withDescription("Defaults to " + StringUtils.asString(DEFAULT_FORMATS).toLowerCase())
                 .withOptions("-icon")
                     .withArgument("path")
                     .withDescription("Browser window favicon for the documentation")
                 .withOptions("-notes")
+                    .withArgument("name")
                     .withArgument("path")
                     .withDescription("Optional set of notes that will be included in the report.")
-                    .withDescription("The types of file that can be used are " +
-                                        StringUtils.asString(NoteFormat.values()).toLowerCase())
-                    .withDescription("Multiple sets of notes can be specified")
+                    .withDescription("The types of file that can be used are:")
+                    .withDescription("  " + StringUtils.asString(NoteFormat.values()).toLowerCase())
+                    .withDescription("Multiple sets of notes can be specified.")
+                    .withDescription("Notes with the same name will be concatenated.")
                 .withOptions("-description")
                     .withArgument("path")
                     .withDescription("Add a description to the Overview page")
@@ -371,15 +393,15 @@ public class Config {
 
 
     /**
-     * Returns a paths to a text files that contains notes for the harness;.
+     * Returns descriptions for all the notes that were requested
      * An empty list indicates no notes were requested
      * @return a paths to a text files that contains notes for the harness
      */
     @Nonnull
-    public Collection<String> getNotesPath() {
+    public Collection<NoteDescription> getNotes() {
         Preconditions.checkState(configured, "Config options have not been applied");
 
-        return notesPath;
+        return notes;
     }
 
 

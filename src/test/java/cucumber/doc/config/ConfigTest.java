@@ -4,8 +4,10 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Iterator;
 
 import com.sun.javadoc.DocErrorReporter;
 import cucumber.doc.report.Format;
@@ -47,7 +49,7 @@ public class ConfigTest {
         Assert.assertEquals("Unexpected option count '-d'", 2, config.requestOption("-d"));
         Assert.assertEquals("Unexpected option count '-format'", 2, config.requestOption("-format"));
         Assert.assertEquals("Unexpected option count '-icon'", 2, config.requestOption("-icon"));
-        Assert.assertEquals("Unexpected option count '-notes'", 2, config.requestOption("-notes"));
+        Assert.assertEquals("Unexpected option count '-notes'", 3, config.requestOption("-notes"));
         Assert.assertEquals("Unexpected option count '-trace'", 1, config.requestOption("-trace"));
         Assert.assertEquals("Unexpected option count '-unknown_option'", 0, config.requestOption("-unknown_option"));
     }
@@ -291,45 +293,78 @@ public class ConfigTest {
 
 
     /**
-     * Unit test {@link Config#getNotesPath}
+     * Unit test {@link Config#getNotes}
      */
     @Test
     public void test_GetNotesPath_default() {
         boolean valid = config.applyOptions(new String[0][], reporter);
 
         Assert.assertTrue("Invalid default options", valid);
-        Assert.assertEquals("Unexpected notes", Collections.emptyList(), new ArrayList<>(config.getNotesPath()));
+        Assert.assertEquals("Unexpected notes", Collections.emptyList(), new ArrayList<>(config.getNotes()));
     }
 
 
     /**
-     * Unit test {@link Config#getNotesPath}
+     * Unit test {@link Config#getNotes}
      */
     @Test
     public void test_GetNotesPath_valid() throws Exception {
         URL location = getClass().getClassLoader().getResource("config/notes.txt");
         String file = new File(location.toURI()).getAbsolutePath();
 
-        boolean valid = config.applyOptions(new String[][]{{"-notes", file}}, reporter);
+        boolean valid = config.applyOptions(new String[][]{{"-notes", "valid", file}}, reporter);
+        Collection<NoteDescription> actual = config.getNotes();
 
         Assert.assertTrue("Invalid '-notes' options", valid);
-        Assert.assertEquals("Unexpected notes",
-                            Arrays.asList(file),
-                            new ArrayList<>(config.getNotesPath()));
+        Assert.assertEquals("Unexpected note count", 1, actual.size());
+
+        NoteDescription desc = actual.iterator().next();
+
+        Assert.assertEquals("Unexpected notes name", "valid", desc.getName());
+        Assert.assertEquals("Unexpected notes path", file, desc.getPath());
     }
 
 
     /**
-     * Unit test {@link Config#getNotesPath}
+     * Unit test {@link Config#getNotes}
      */
     @Test
     public void test_GetNotesPath_Invalid() {
-        boolean valid = config.applyOptions(new String[][]{{"-notes", "a/b/c"}, {"-notes", "d/e/f"}}, reporter);
+        boolean valid = config.applyOptions(new String[][]{{"-notes", "name-1", "a/b/c"},
+                                                           {"-notes", "name-2", "d/e/f"}}, reporter);
+
+        Collection<NoteDescription> actual = config.getNotes();
 
         Assert.assertFalse("Invalid '-notes' options", valid);
-        Assert.assertEquals("Unexpected notes",
-                            Arrays.asList("a/b/c", "d/e/f"),
-                            new ArrayList<>(config.getNotesPath()));
+        Assert.assertEquals("Unexpected note count", 2, actual.size());
+
+        Iterator<NoteDescription> iterator = actual.iterator();
+        NoteDescription desc = iterator.next();
+
+        Assert.assertEquals("Unexpected notes name", "name-1", desc.getName());
+        Assert.assertEquals("Unexpected notes path", "a/b/c", desc.getPath());
+
+        desc = iterator.next();
+        Assert.assertEquals("Unexpected notes name", "name-2", desc.getName());
+        Assert.assertEquals("Unexpected notes path", "d/e/f", desc.getPath());
+    }
+
+
+    /**
+     * Unit test {@link Config#getNotes}
+     */
+    @Test
+    public void test_GetNotesPath_EmptyName() throws Exception {
+        boolean valid = config.applyOptions(new String[][]{{"-notes", "", "g/h/i"}}, reporter);
+        Collection<NoteDescription> actual = config.getNotes();
+
+        Assert.assertFalse("Invalid '-notes' options", valid);
+        Assert.assertEquals("Unexpected note count", 1, actual.size());
+
+        NoteDescription desc = actual.iterator().next();
+
+        Assert.assertEquals("Unexpected notes name", "", desc.getName());
+        Assert.assertEquals("Unexpected notes path", "g/h/i", desc.getPath());
     }
 
 

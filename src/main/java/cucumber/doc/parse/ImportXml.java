@@ -80,9 +80,10 @@ class ImportXml {
 
     @Nonnull
     private NoteModel importNote(@Nonnull Element child) {
+        String name = readChild(child, "name");
         String text = readChild(child, "text");
         NoteFormat format = readChild(child, "format", NoteFormat.class);
-        NoteModel model = new NoteModel(text, format);
+        NoteModel model = new NoteModel(name, text, format);
 
         return model;
     }

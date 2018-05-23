@@ -1,10 +1,12 @@
 package cucumber.doc.parse;
 
 import java.net.URL;
+import java.util.Iterator;
 
 import cucumber.doc.exception.CukeDocException;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.ImplementationModel;
+import cucumber.doc.model.NoteModel;
 import cucumber.doc.model.TypeModel;
 import cucumber.doc.util.NoteFormat;
 import org.junit.Assert;
@@ -51,14 +53,21 @@ public class ImportXmlTest {
         new ImportXml().importXml(builder, path);
 
         ApplicationModel actual = builder.build();
+        Iterator<NoteModel> notes = actual.getNotes().iterator();
 
         Assert.assertEquals("Unexpected notes count", 2, actual.getNotes().size());
-        Assert.assertEquals("Unexpected note 1 format", NoteFormat.TEXT, actual.getNotes().get(0).getFormat());
+
+        NoteModel note = notes.next();
+
+        Assert.assertEquals("Unexpected note 1 format", NoteFormat.TEXT, note.getFormat());
         Assert.assertEquals("Unexpected note 1 content",
-                                "Line1\nLine3\n".replaceAll(" ", ""),
-                                actual.getNotes().get(0).getText().replaceAll(" ", ""));
-        Assert.assertEquals("Unexpected note 2 format", NoteFormat.HTML, actual.getNotes().get(1).getFormat());
-        Assert.assertEquals("Unexpected note 2 content", "note2", actual.getNotes().get(1).getText());
+                                "Note1.1\nNote1.2\nNote3".replaceAll(" ", ""),
+                                note.getText().replaceAll(" ", ""));
+
+        note = notes.next();
+
+        Assert.assertEquals("Unexpected note 2 format", NoteFormat.HTML, note.getFormat());
+        Assert.assertEquals("Unexpected note 2 content", "Note 2", note.getText());
 
         Assert.assertEquals("Unexpected type count", 2, actual.getTypes().size());
 

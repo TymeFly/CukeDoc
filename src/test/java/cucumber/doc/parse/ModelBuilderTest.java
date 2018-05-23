@@ -2,6 +2,7 @@ package cucumber.doc.parse;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
@@ -9,6 +10,7 @@ import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.RootDoc;
 import cucumber.doc.config.Config;
 import cucumber.doc.model.ApplicationModel;
+import cucumber.doc.model.NoteModel;
 import cucumber.doc.util.NoteFormat;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,31 +40,50 @@ public class ModelBuilderTest {
     public void test_Build() throws Exception {
         RootDoc app = Sample.rootDoc();
 
-        config.applyOptions(new String[][]{{"-notes", findFile("notes/note.html")},
-                                           {"-notes", findFile("notes/note.txt")},
-                                           {"-notes", findFile("sample/sample1.feature")},
+        config.applyOptions(new String[][]{{"-notes", "desc", findFile("notes/note.html")},
+                                           {"-notes", "desc", findFile("notes/note.txt")},
+                                           {"-notes", "name", findFile("sample/sample1.feature")},
                                            {"-link", findFile("report/xml/sample.xml")}},
                             reporter);
 
         ApplicationModel actual = new ModelBuilder(app).build();
+        Iterator<NoteModel> iterator = actual.getNotes().iterator();
 
         // Expected 3 direct notes and 2 from the linked description
-        Assert.assertEquals("Unexpected Note count", 5, actual.getNotes().size());
-        Assert.assertTrue("Unexpected Note 1 Content: " + actual.getNotes().get(0).getText(),
-                            actual.getNotes().get(0).getText().startsWith("This is a <b>html</b> note"));
-        Assert.assertEquals("Unexpected Note 1 Type", NoteFormat.HTML, actual.getNotes().get(0).getFormat());
-        Assert.assertTrue("Unexpected Note 2 Content: " + actual.getNotes().get(1).getText(),
-                            actual.getNotes().get(1).getText().startsWith("This is a text note"));
-        Assert.assertEquals("Unexpected Note 2 Type", NoteFormat.TEXT, actual.getNotes().get(1).getFormat());
-        Assert.assertTrue("Unexpected Note 3 Content: " + actual.getNotes().get(2).getText(),
-                            actual.getNotes().get(2).getText().startsWith("Feature: Sample Feature"));
-        Assert.assertEquals("Unexpected Note 3 Type", NoteFormat.FEATURE, actual.getNotes().get(2).getFormat());
-        Assert.assertTrue("Unexpected Note 4 Content: " + actual.getNotes().get(3).getText(),
-                            actual.getNotes().get(3).getText().startsWith("Line1"));
-        Assert.assertEquals("Unexpected Note 4 Type", NoteFormat.TEXT, actual.getNotes().get(3).getFormat());
-        Assert.assertTrue("Unexpected Note 5 Content: " + actual.getNotes().get(4).getText(),
-                            actual.getNotes().get(4).getText().startsWith("note2"));
-        Assert.assertEquals("Unexpected Note 5 Type", NoteFormat.HTML, actual.getNotes().get(4).getFormat());
+        Assert.assertEquals("Unexpected Note count", 4, actual.getNotes().size());
+
+        NoteModel note = iterator.next();
+
+        Assert.assertEquals("Unexpected Note 1 name", "desc", note.getName());
+        Assert.assertTrue("Unexpected Note 1 Content start: " + note.getText(),
+                            note.getText().startsWith("This is a <b>html</b> note"));
+        Assert.assertTrue("Unexpected Note 1 Content end: " + note.getText(),
+                            note.getText().endsWith("Hello World"));
+        Assert.assertEquals("Unexpected Note 1 Type", NoteFormat.TEXT, note.getFormat());
+
+        note = iterator.next();
+        Assert.assertEquals("Unexpected Note 2 name", "name", note.getName());
+        Assert.assertTrue("Unexpected Note 2 Content start: " + note.getText(),
+                            note.getText().startsWith("Feature: Sample Feature"));
+        Assert.assertTrue("Unexpected Note 2 Content end: " + note.getText(),
+                            note.getText().endsWith("Then I should have 2 cukes"));
+        Assert.assertEquals("Unexpected Note 2 Type", NoteFormat.FEATURE, note.getFormat());
+
+        note = iterator.next();
+        Assert.assertEquals("Unexpected Note 3 name", "name-1", note.getName());
+        Assert.assertTrue("Unexpected Note 3 Content start: " + note.getText(),
+                            note.getText().startsWith("Note 1.1"));
+        Assert.assertTrue("Unexpected Note 3 Content end: " + note.getText(),
+                            note.getText().endsWith("Note 3"));
+        Assert.assertEquals("Unexpected Note 3 Type", NoteFormat.TEXT, note.getFormat());
+
+        note = iterator.next();
+        Assert.assertEquals("Unexpected Note 4 name", "name-2", note.getName());
+        Assert.assertTrue("Unexpected Note 4 Content start: " + note.getText(),
+                            note.getText().startsWith("Note 2"));
+        Assert.assertTrue("Unexpected Note 4 Content end: " + note.getText(),
+                            note.getText().endsWith("Note 2"));
+        Assert.assertEquals("Unexpected Note 4 Type", NoteFormat.HTML, note.getFormat());
 
         // Expected 2 classes from the app and 2 that were linked, sorted by name
         Assert.assertEquals("Unexpected Type count", 4, actual.getTypes().size());

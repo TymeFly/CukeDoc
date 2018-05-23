@@ -1,7 +1,7 @@
 package cucumber.doc.report.xml;
 
 import java.io.File;
-import java.util.List;
+import java.util.Collection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -115,7 +115,7 @@ public class XmlReport implements ReportBuilder {
 
 
     private void processNotes(@Nonnull Document document, @Nonnull Element parent, @Nonnull ApplicationModel model) {
-        List<NoteModel> notes = model.getNotes();
+        Collection<NoteModel> notes = model.getNotes();
 
         if (!notes.isEmpty()) {
             Element element = document.createElement("notes");
@@ -132,6 +132,7 @@ public class XmlReport implements ReportBuilder {
     private void processNote(@Nonnull Document document, @Nonnull Element parent, @Nonnull NoteModel model) {
         Element element = document.createElement("note");
 
+        addNode(document, element, "name", model.getName());
         addNode(document, element, "text", model.getText());
         addNode(document, element, "format", model.getFormat().name());
 

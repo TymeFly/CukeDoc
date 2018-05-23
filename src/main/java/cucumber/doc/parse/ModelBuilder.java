@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import com.sun.javadoc.RootDoc;
 import cucumber.doc.config.Config;
+import cucumber.doc.config.NoteDescription;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.NoteModel;
 import cucumber.doc.util.FileUtils;
@@ -47,10 +48,12 @@ public class ModelBuilder {
      * @param builder       application builder.
      */
     private void addNotes(@Nonnull ApplicationModel.Builder builder) {
-        for (String notesPath : Config.getInstance().getNotesPath()) {
+        for (NoteDescription note : Config.getInstance().getNotes()) {
+            String name = note.getName();
+            String notesPath = note.getPath();
             String text = FileUtils.read(notesPath);
             NoteFormat format = NoteFormat.forFile(notesPath);
-            NoteModel model = new NoteModel(text, format);
+            NoteModel model = new NoteModel(name, text, format);
 
             builder.withNote(model);
         }

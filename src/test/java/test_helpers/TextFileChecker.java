@@ -90,11 +90,10 @@ public class TextFileChecker implements FileChecker {
         List<String> expected = readFile(expectedFile);
         List<String> actual = readFile(actualFile);
 
-        assertTrue("File size mismatch. Expected file " + expectedFile + " has " + expected.size() + " lines," +
-                        " but actual file " + actualFile + " has " + actual.size() + " lines.",
-                   (expected.size() == actual.size()));
+        boolean sameSize = expected.size() == actual.size();
+        int size = Math.min(expected.size(), actual.size());
 
-        for (int line = 0; line < expected.size(); line++) {
+        for (int line = 0; line < size; line++) {
             String expectedRaw = expected.get(line);
             String actualRaw = actual.get(line);
 
@@ -115,10 +114,16 @@ public class TextFileChecker implements FileChecker {
 
             if (!matched) {
                 // AssertEquals will always fail, however it will display a formatted error message
-                assertEquals("Difference between " + expectedFile + " and " + actualFile + " on line " + (line + 1),
-                              expectedRaw, actualRaw);
+                assertEquals("Difference between " + expectedFile + " and " + actualFile + " on line " + (line + 1) +
+                             (sameSize ? "" : " with file size mismatch (" +
+                                    "Expected file has " + expected.size() + " lines," +
+                                    " but actual file has " + actual.size() + " lines" + ")"),
+                             expectedRaw, actualRaw);
             }
         }
+
+        assertTrue("File size mismatch. Expected file " + expectedFile + " has " + expected.size() + " lines," +
+                " but actual file " + actualFile + " has " + actual.size() + " lines.", sameSize);
     }
 
 

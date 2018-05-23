@@ -6,13 +6,15 @@
     </meta>
     <notes>
         <note>
-            <text>Line1
-                Line3
-            </text>
+            <name>name-1</name>
+            <text>Note 1.1
+Note 1.2
+Note 3</text>
             <format>TEXT</format>
         </note>
         <note>
-            <text>note2</text>
+            <name>name-2</name>
+            <text>Note 2</text>
             <format>HTML</format>
         </note>
     </notes>

@@ -1,5 +1,6 @@
 package cucumber.doc.report.basic;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import cucumber.doc.model.TypeModel;
 import cucumber.doc.report.ReportBuilder;
 import cucumber.doc.util.DateUtils;
 import cucumber.doc.util.FileUtils;
+import cucumber.doc.util.StringUtils;
 
 /**
  * Generate a simple text based report consisting of just the mappings and their locations. The results are
@@ -86,15 +88,26 @@ public class BasicReport implements ReportBuilder {
 
     private void addNotes(@Nonnull StringBuilder builder) {
         String title = Translate.message(LanguageKey.NOTES_TITLE);
-        List<NoteModel> notes = model.getNotes();
+        Collection<NoteModel> notes = model.getNotes();
 
         if (!notes.isEmpty()) {
             builder.append("--==| ").append(title).append(" |==--")
                    .append(EOL);
 
             for (NoteModel note : notes) {
-                builder.append(EOL)
-                       .append(note.getText())
+                builder.append(EOL);
+
+                if (notes.size() != 1) {
+                    String name = note.getName();
+
+                    builder.append(name)
+                           .append(EOL)
+                           .append(StringUtils.sequence('~', name.length()))
+                           .append(EOL)
+                           .append(EOL);
+                }
+
+                builder.append(note.getText())
                        .append(EOL);
             }
         }

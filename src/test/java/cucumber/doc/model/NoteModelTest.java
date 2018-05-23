@@ -16,10 +16,22 @@ public class NoteModelTest {
 
     @Before
     public void setUp() {
-        model1 = new NoteModel("Hello", NoteFormat.TEXT);
-        model2 = new NoteModel("World", NoteFormat.HTML);
-        model3 = new NoteModel("Foo", NoteFormat.FEATURE);
-        model4 = new NoteModel("Bar", NoteFormat.PROPERTIES);
+        model1 = new NoteModel("name-1", "Hello", NoteFormat.TEXT);
+        model2 = new NoteModel("name-2", "World", NoteFormat.HTML);
+        model3 = new NoteModel("name-3", "Foo", NoteFormat.FEATURE);
+        model4 = new NoteModel("name-3", "Bar", NoteFormat.PROPERTIES);
+    }
+
+
+    /**
+     * Unit test {@link NoteModel#getName()}
+     */
+    @Test
+    public void test_GetName() {
+        Assert.assertEquals("Model1 unexpected name", "name-1", model1.getName());
+        Assert.assertEquals("Model2 unexpected name", "name-2", model2.getName());
+        Assert.assertEquals("Model3 unexpected name", "name-3", model3.getName());
+        Assert.assertEquals("Model4 unexpected name", "name-3", model4.getName());
     }
 
 

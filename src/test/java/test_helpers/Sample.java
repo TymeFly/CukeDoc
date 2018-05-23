@@ -221,8 +221,9 @@ public class Sample {
                                 .withDescription("Type Description. Is Here")
                                 .since("1.0.1")
                                 .build())
-                        .withNote(new NoteModel("Line1\nLine3\n", NoteFormat.TEXT))
-                        .withNote(new NoteModel("note2", NoteFormat.HTML))
+                        .withNote(new NoteModel("name-1", "Note 1.1\nNote 1.2", NoteFormat.TEXT))
+                        .withNote(new NoteModel("name-2", "Note 2", NoteFormat.HTML))
+                        .withNote(new NoteModel("name-1", "Note 3", NoteFormat.HTML))
                         .build();
 
         return app;

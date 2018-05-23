@@ -1,5 +1,7 @@
 package cucumber.doc.model;
 
+import java.util.Iterator;
+
 import cucumber.doc.util.NoteFormat;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,7 +25,7 @@ public class ApplicationModelTest {
                                         .withMapping("Given", "mapping1")
                                         .build())
                                 .build())
-                        .withNote(new NoteModel("note1", NoteFormat.TEXT))
+                        .withNote(new NoteModel("name-1", "note1", NoteFormat.TEXT))
                         .build();
         app3 = new ApplicationModel.Builder()
                         .withType(new TypeModel.Builder("z-Class2")
@@ -40,9 +42,10 @@ public class ApplicationModelTest {
                                         .withMapping("Given", "b-mapping5")
                                         .build())
                                 .build())
-                        .withNote(new NoteModel("b-note2", NoteFormat.HTML))
-                        .withNote(new NoteModel("c-note4", NoteFormat.TEXT))
-                        .withNote(new NoteModel("a-note3", NoteFormat.TEXT))
+                        .withNote(new NoteModel("name-1", "b-note2", NoteFormat.HTML))
+                        .withNote(new NoteModel("name-2", "c-note4", NoteFormat.HTML))
+                        .withNote(new NoteModel("name-2", "a-note3", NoteFormat.PROPERTIES))
+                        .withNote(new NoteModel("name-1", "d-note3", NoteFormat.HTML))
                         .build();
     }
 
@@ -88,19 +91,34 @@ public class ApplicationModelTest {
      */
     @Test
     public void test_GetNotes() {
+        Iterator<NoteModel> notes;
+        NoteModel note;
+
         Assert.assertEquals("app1 has unexpected notes count", 0, app1.getNotes().size());
 
         Assert.assertEquals("app2 has unexpected notes count", 1, app2.getNotes().size());
-        Assert.assertEquals("Unexpected app2 note format", NoteFormat.TEXT, app2.getNotes().get(0).getFormat());
-        Assert.assertEquals("Unexpected app2 note content", "note1", app2.getNotes().get(0).getText());
 
-        // Notes should remain in insertion order
-        Assert.assertEquals("app3 has unexpected notes count", 3, app3.getNotes().size());
-        Assert.assertEquals("Unexpected app3 notes 1 format", NoteFormat.HTML, app3.getNotes().get(0).getFormat());
-        Assert.assertEquals("Unexpected app3 notes 1 content", "b-note2", app3.getNotes().get(0).getText());
-        Assert.assertEquals("Unexpected app3 notes 2 format", NoteFormat.TEXT, app3.getNotes().get(1).getFormat());
-        Assert.assertEquals("Unexpected app3 notes 2 content", "c-note4", app3.getNotes().get(1).getText());
-        Assert.assertEquals("Unexpected app3 notes 3 format", NoteFormat.TEXT, app3.getNotes().get(2).getFormat());
-        Assert.assertEquals("Unexpected app3 notes 3 content", "a-note3", app3.getNotes().get(2).getText());
+        notes = app2.getNotes().iterator();
+        note = notes.next();
+
+        Assert.assertEquals("Unexpected app2 note format", NoteFormat.TEXT, note.getFormat());
+        Assert.assertEquals("Unexpected app2 note content", "note1", note.getText());
+
+        // Notes be in order of their name, with duplicate names merged
+        Assert.assertEquals("app3 has unexpected notes count", 2, app3.getNotes().size());
+
+        notes = app3.getNotes().iterator();
+        note = notes.next();
+
+        Assert.assertEquals("Unexpected app3 notes 1 name", "name-1", note.getName());
+        Assert.assertEquals("Unexpected app3 notes 1 format", NoteFormat.HTML, note.getFormat());
+        Assert.assertEquals("Unexpected app3 notes 1 content", "b-note2\nd-note3", note.getText());
+
+        note = notes.next();
+
+        // Format as text because it's the lowest common denominator
+        Assert.assertEquals("Unexpected app3 notes 2 name", "name-2", note.getName());
+        Assert.assertEquals("Unexpected app3 notes 2 format", NoteFormat.TEXT, note.getFormat());
+        Assert.assertEquals("Unexpected app3 notes 2 content", "c-note4\na-note3", note.getText());
     }
 }
