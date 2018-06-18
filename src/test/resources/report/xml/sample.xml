@@ -6,16 +6,21 @@
     </meta>
     <notes>
         <note>
-            <name>name-1</name>
-            <text>Note 1.1
-Note 1.2
-Note 3</text>
-            <format>TEXT</format>
+            <name>Name-1</name>
+            <text>Note 1</text>
+            <format>FEATURE</format>
         </note>
         <note>
-            <name>name-2</name>
+            <name>Name-2</name>
             <text>Note 2</text>
             <format>HTML</format>
+        </note>
+        <note>
+            <name>To Do</name>
+            <text>TODO 1.1
+TODO 1.2
+To Do 2.1</text>
+            <format>TEXT</format>
         </note>
     </notes>
     <types>

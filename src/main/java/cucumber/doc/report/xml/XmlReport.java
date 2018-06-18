@@ -132,7 +132,7 @@ public class XmlReport implements ReportBuilder {
     private void processNote(@Nonnull Document document, @Nonnull Element parent, @Nonnull NoteModel model) {
         Element element = document.createElement("note");
 
-        addNode(document, element, "name", model.getName());
+        addNode(document, element, "name", model.getFriendlyName());
         addNode(document, element, "text", model.getText());
         addNode(document, element, "format", model.getFormat().name());
 

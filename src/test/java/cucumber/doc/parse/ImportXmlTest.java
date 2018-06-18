@@ -55,19 +55,26 @@ public class ImportXmlTest {
         ApplicationModel actual = builder.build();
         Iterator<NoteModel> notes = actual.getNotes().iterator();
 
-        Assert.assertEquals("Unexpected notes count", 2, actual.getNotes().size());
+        Assert.assertEquals("Unexpected notes count", 3, actual.getNotes().size());
 
         NoteModel note = notes.next();
 
-        Assert.assertEquals("Unexpected note 1 format", NoteFormat.TEXT, note.getFormat());
+        Assert.assertEquals("Unexpected note 1 format", NoteFormat.FEATURE, note.getFormat());
         Assert.assertEquals("Unexpected note 1 content",
-                                "Note1.1\nNote1.2\nNote3".replaceAll(" ", ""),
-                                note.getText().replaceAll(" ", ""));
+                                "Note 1",
+                                note.getText());
 
         note = notes.next();
 
         Assert.assertEquals("Unexpected note 2 format", NoteFormat.HTML, note.getFormat());
-        Assert.assertEquals("Unexpected note 2 content", "Note 2", note.getText());
+        Assert.assertEquals("Unexpected note 2 content",
+                                "Note 2",
+                                note.getText());
+
+        note = notes.next();
+
+        Assert.assertEquals("Unexpected note 3 format", NoteFormat.TEXT, note.getFormat());
+        Assert.assertEquals("Unexpected note 3 content", "TODO 1.1\nTODO 1.2\nTo Do 2.1", note.getText());
 
         Assert.assertEquals("Unexpected type count", 2, actual.getTypes().size());
 
