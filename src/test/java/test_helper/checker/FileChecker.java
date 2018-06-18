@@ -1,4 +1,4 @@
-package test_helpers.checker;
+package test_helper.checker;
 
 import java.io.File;
 import java.nio.file.Path;

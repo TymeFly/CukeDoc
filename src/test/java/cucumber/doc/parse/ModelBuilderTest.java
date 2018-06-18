@@ -11,8 +11,8 @@ import cucumber.doc.util.NoteFormat;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import test_helpers.utils.Sample;
-import test_helpers.utils.TestFileHelper;
+import test_helper.utils.Sample;
+import test_helper.utils.TestFileHelper;
 
 import static org.mockito.Mockito.mock;
 

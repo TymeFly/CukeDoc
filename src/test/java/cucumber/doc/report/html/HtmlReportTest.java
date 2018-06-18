@@ -11,10 +11,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import test_helpers.checker.BinaryFileChecker;
-import test_helpers.checker.DirectoryChecker;
-import test_helpers.checker.TextFileChecker;
-import test_helpers.utils.Sample;
+import test_helper.checker.BinaryFileChecker;
+import test_helper.checker.DirectoryChecker;
+import test_helper.checker.TextFileChecker;
+import test_helper.utils.Sample;
 
 import static org.mockito.Mockito.mock;
 

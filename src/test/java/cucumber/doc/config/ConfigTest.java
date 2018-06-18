@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemOutRule;
-import test_helpers.utils.TestFileHelper;
+import test_helper.utils.TestFileHelper;
 
 import static org.mockito.Mockito.mock;
 

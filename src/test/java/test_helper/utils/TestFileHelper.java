@@ -5,7 +5,7 @@
  * in suit or prosecution.
  */
 
-package test_helpers.utils;
+package test_helper.utils;
 
 import java.io.File;
 import java.net.URL;
