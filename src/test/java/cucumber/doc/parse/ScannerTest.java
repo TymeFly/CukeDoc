@@ -8,7 +8,7 @@ import cucumber.doc.model.ImplementationModel;
 import cucumber.doc.model.TypeModel;
 import org.junit.Assert;
 import org.junit.Test;
-import test_helpers.Sample;
+import test_helpers.utils.Sample;
 
 /**
  * Unit test for {@link Scanner}

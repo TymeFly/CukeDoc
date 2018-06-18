@@ -1,4 +1,4 @@
-package test_helpers;
+package test_helpers.checker;
 
 import java.io.IOException;
 import java.nio.file.Files;

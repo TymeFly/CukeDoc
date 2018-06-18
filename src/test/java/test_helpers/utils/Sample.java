@@ -1,4 +1,4 @@
-package test_helpers;
+package test_helpers.utils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
