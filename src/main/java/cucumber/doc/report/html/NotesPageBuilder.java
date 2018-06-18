@@ -1,6 +1,5 @@
 package cucumber.doc.report.html;
 
-import java.util.Collection;
 import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
@@ -9,72 +8,72 @@ import javax.annotation.Nullable;
 import cucumber.doc.exception.CukeDocException;
 import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.NoteModel;
+import cucumber.doc.util.EnumSets;
 import j2html.tags.DomContent;
 
 import static j2html.TagCreator.div;
-import static j2html.TagCreator.each;
 import static j2html.TagCreator.p;
 import static j2html.TagCreator.pre;
 import static j2html.TagCreator.rawHtml;
 
 /**
- * Builder for the optional "notes" page
+ * Builder for am optional "notes" page
  */
-class NotesPageBuilder implements PageBuilder {
-    private final ApplicationModel model;
+class NotesPageBuilder extends PageBuilder {
+    private final NoteModel model;
+    private final EnumSet<MenuItem> menuItems;
 
-    NotesPageBuilder(@Nonnull ApplicationModel model) {
+
+    NotesPageBuilder(@Nonnull String pageName, @Nonnull ApplicationModel parent, @Nonnull NoteModel model) {
+        super(pageName, parent, "../");
+
+        boolean multipleNotes = (parent.getNotes().size() != 1);
+
         this.model = model;
+        this.menuItems = (multipleNotes ? EnumSet.allOf(MenuItem.class) : EnumSets.allExcept(MenuItem.NOTES));
     }
 
 
     @Nonnull
     @Override
     public EnumSet<MenuItem> menuOptions() {
-        return EnumSet.complementOf(EnumSet.of(MenuItem.NOTES));
+        return menuItems;
     }
 
 
     @Nullable
     @Override
-    public DomContent buildPage() {
-        Collection<NoteModel> notes = model.getNotes();
-        DomContent result;
-
-        if (notes.isEmpty()) {
-            result = null;
-        } else {
-            result =
-              div(
-                each(notes, note ->
-                  p(
-                    getContent(note)
-                  ).withClass("notes")
-                )
-              ).withId("docBody");
-        }
+    public DomContent buildPageContent() {
+        DomContent result =
+            div(
+              p(
+                getContent()
+              ).withClass("notes")
+            ).withId("docBody");
 
         return result;
     }
 
 
     @Nonnull
-    private DomContent getContent(@Nonnull NoteModel note) {
+    private DomContent getContent() {
         DomContent content;
 
-        switch (note.getFormat()) {
+        switch (model.getFormat()) {
             case FEATURE:
             case TEXT:
             case PROPERTIES:
-                content = pre(note.getText());
+                // The new line is a workaround for a problem with j2htl where the first line of
+                // the pre-formatted text becomes indented.
+                content = pre("\n" + model.getText());
                 break;
 
             case HTML:
-                content = rawHtml(note.getText());
+                content = rawHtml(model.getText());
                 break;
 
             default:
-                throw new CukeDocException("Unexpected format '%s'", note.getFormat());
+                throw new CukeDocException("Unexpected format '%s'", model.getFormat());
         }
 
         return content;

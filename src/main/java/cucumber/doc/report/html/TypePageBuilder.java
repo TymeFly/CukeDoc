@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import cucumber.doc.config.LanguageKey;
 import cucumber.doc.config.Translate;
+import cucumber.doc.model.ApplicationModel;
 import cucumber.doc.model.ImplementationModel;
 import cucumber.doc.model.MappingModel;
 import cucumber.doc.model.TypeModel;
@@ -40,22 +41,24 @@ import static j2html.TagCreator.ul;
 /**
  * Builder for a type
  */
-class TypePageBuilder implements PageBuilder {
+class TypePageBuilder extends PageBuilder {
     private static final String DEFAULT_TABLE_DESCRIPTION =
         i(
-          text('<' + Translate.message(LanguageKey.CLASS_TABLE) + '>')
+          text('<' + Translate.message(LanguageKey.TYPE_TABLE) + '>')
         ).renderFormatted();
 
     private static final String DEFAULT_ARGUMENT_DESCRIPTION =
         i(
-          text('<' + Translate.message(LanguageKey.CLASS_ARGUMENT) + '>')
+          text('<' + Translate.message(LanguageKey.TYPE_ARGUMENT) + '>')
         ).renderFormatted();
 
 
     private final TypeModel typeModel;
 
 
-    TypePageBuilder(@Nonnull TypeModel model) {
+    TypePageBuilder(@Nonnull String pageName, @Nonnull ApplicationModel parent, @Nonnull TypeModel model) {
+        super(pageName, parent, "");
+
         this.typeModel = model;
     }
 
@@ -75,7 +78,7 @@ class TypePageBuilder implements PageBuilder {
 
     @Nonnull
     @Override
-    public ContainerTag buildPage() {
+    public ContainerTag buildPageContent() {
         return
             div(
               h2(typeModel.getFriendlyName()),
@@ -171,7 +174,7 @@ class TypePageBuilder implements PageBuilder {
             h4(implementationModel.getFriendlyName())
               .withClass("implementationTitle")
               .attr("title",
-                    Translate.message(LanguageKey.CLASS_HOVER_METHOD) + ":\n  " +
+                    Translate.message(LanguageKey.TYPE_HOVER_METHOD) + ":\n  " +
                                       implementationModel.getMappingType().getSimpleName() + "." +
                                       implementationModel.getName()),
             div(
@@ -225,7 +228,7 @@ class TypePageBuilder implements PageBuilder {
                       text(" "),
                       b(mapping.getFriendlyMapping())
                     ).attr("title",
-                           Translate.message(LanguageKey.CLASS_HOVER_ANNOTATION) + ":\n  @" +
+                           Translate.message(LanguageKey.TYPE_HOVER_ANNOTATION) + ":\n  @" +
                                              mapping.getVerb() + mapping.getAnnotationText())
                   )
               )
@@ -238,16 +241,16 @@ class TypePageBuilder implements PageBuilder {
         return
             iff((!implementationModel.getParameters().isEmpty()),
               div(
-                h5(Translate.message(LanguageKey.CLASS_WHERE)).withClass("elementSubtitle"),
+                h5(Translate.message(LanguageKey.TYPE_WHERE)).withClass("elementSubtitle"),
                 ul(
                   each(implementationModel.getParameters(), parameters ->
                     li(
                       join(
                         b("<" + parameters.getFriendlyName() + ">")
                           .attr("title",
-                                 Translate.message(LanguageKey.CLASS_HOVER_TYPE) + ":\n  " +
+                                 Translate.message(LanguageKey.TYPE_HOVER_TYPE) + ":\n  " +
                                     parameters.getType() + "\n" +
-                                    Translate.message(LanguageKey.CLASS_HOVER_FORMAT) + ":\n  " +
+                                    Translate.message(LanguageKey.TYPE_HOVER_FORMAT) + ":\n  " +
                                     parameters.getFriendlyFormat()),
                         text(":"),
                         rawHtml(HtmlUtils.cleanDescription(parameters.getDescription(), DEFAULT_ARGUMENT_DESCRIPTION))
@@ -265,7 +268,7 @@ class TypePageBuilder implements PageBuilder {
         return
             iff((implementation.getTable() != null),
               div(
-                h5(Translate.message(LanguageKey.CLASS_TABLE)).withClass("elementSubtitle"),
+                h5(Translate.message(LanguageKey.TYPE_TABLE)).withClass("elementSubtitle"),
                 ul(
                   li(
                     rawHtml(

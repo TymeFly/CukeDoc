@@ -35,12 +35,9 @@ import static j2html.TagCreator.tr;
 /**
  * Page builder for the Overview (index.html) page
  */
-class OverviewPageBuilder implements PageBuilder {
-    private final ApplicationModel model;
-
-
-    OverviewPageBuilder(@Nonnull ApplicationModel model) {
-        this.model = model;
+class OverviewPageBuilder extends PageBuilder {
+    OverviewPageBuilder(@Nonnull String pageName, @Nonnull ApplicationModel model) {
+        super(pageName, model, "");
     }
 
 
@@ -60,7 +57,7 @@ class OverviewPageBuilder implements PageBuilder {
 
     @Nonnull
     @Override
-    public Tag buildPage() {
+    public Tag buildPageContent() {
         return
           div(
             h2(Translate.message(LanguageKey.OVERVIEW_TITLE)).withClass("title"),
@@ -102,7 +99,7 @@ class OverviewPageBuilder implements PageBuilder {
                     th(Translate.message(LanguageKey.OVERVIEW_TYPE)).withClass("colTypes"),
                     th(Translate.message(LanguageKey.GENERAL_DESCRIPTION)).withClass("colDescription")
                   ),
-                  each(model.getTypes(), mappingClass ->
+                  each(getModel().getTypes(), mappingClass ->
                     tr(
                       td(
                         a(
@@ -155,7 +152,7 @@ class OverviewPageBuilder implements PageBuilder {
                                     @Nonnull Text separator,
                                     @Nonnull Function<MappingModel, String> mappingName) {
         return
-            each(model.getMappings(), mapping ->
+            each(getModel().getMappings(), mapping ->
               tr(
                 td(
                   a(

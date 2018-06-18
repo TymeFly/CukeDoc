@@ -14,7 +14,7 @@ enum MenuItem {
     OVERVIEW(LanguageKey.OVERVIEW_TITLE, "index.html"),
 
     /** Menu item for a link to the root of this site */
-    NOTES(LanguageKey.NOTES_TITLE, "note.html") {
+    NOTES(LanguageKey.NOTES_TITLE, "notes/_index.html") {
         @Override
         public boolean isAvailable(@Nonnull ApplicationModel model) {
             return (!model.getNotes().isEmpty());
@@ -54,7 +54,8 @@ enum MenuItem {
 
 
     /**
-     * Returns {@code true} only if this menu item should be displayed
+     * Returns {@code true} only if this menu item should be displayed. It is acceptable to
+     * display a menu item even if the link from it is disabled
      * @param model         application model
      * @return {@code true} only if this menu item should be displayed; else [@code false}
      */
