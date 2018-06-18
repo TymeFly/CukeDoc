@@ -14,7 +14,7 @@ enum MenuItem {
     OVERVIEW(LanguageKey.OVERVIEW_TITLE, "index.html"),
 
     /** Menu item for a link to the root of this site */
-    NOTES(LanguageKey.NOTES_TITLE, "notes.html") {
+    NOTES(LanguageKey.NOTES_TITLE, "note.html") {
         @Override
         public boolean isAvailable(@Nonnull ApplicationModel model) {
             return (!model.getNotes().isEmpty());

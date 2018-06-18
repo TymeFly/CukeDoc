@@ -12,10 +12,12 @@ import java.util.Iterator;
 import com.sun.javadoc.DocErrorReporter;
 import cucumber.doc.report.Format;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemOutRule;
+import test_helpers.utils.TestFileHelper;
 
 import static org.mockito.Mockito.mock;
 
@@ -32,6 +34,17 @@ public class ConfigTest {
 
     private Config config = Config.newInstance();
     private DocErrorReporter reporter = mock(DocErrorReporter.class);
+    private String featureNote;
+    private String htmlNote;
+    private String textNote;
+
+
+    @Before
+    public void setUp() throws Exception {
+        featureNote = TestFileHelper.findFile("sample/sample1.feature");
+        htmlNote = TestFileHelper.findFile("note/note.html");
+        textNote = TestFileHelper.findFile("note/note.txt");
+    }
 
 
     /**
@@ -49,7 +62,7 @@ public class ConfigTest {
         Assert.assertEquals("Unexpected option count '-d'", 2, config.requestOption("-d"));
         Assert.assertEquals("Unexpected option count '-format'", 2, config.requestOption("-format"));
         Assert.assertEquals("Unexpected option count '-icon'", 2, config.requestOption("-icon"));
-        Assert.assertEquals("Unexpected option count '-notes'", 3, config.requestOption("-notes"));
+        Assert.assertEquals("Unexpected option count '-note'", 3, config.requestOption("-note"));
         Assert.assertEquals("Unexpected option count '-trace'", 1, config.requestOption("-trace"));
         Assert.assertEquals("Unexpected option count '-unknown_option'", 0, config.requestOption("-unknown_option"));
     }
@@ -312,7 +325,7 @@ public class ConfigTest {
         URL location = getClass().getClassLoader().getResource("config/notes.txt");
         String file = new File(location.toURI()).getAbsolutePath();
 
-        boolean valid = config.applyOptions(new String[][]{{"-notes", "valid", file}}, reporter);
+        boolean valid = config.applyOptions(new String[][]{{"-note", "valid", file}}, reporter);
         Collection<NoteDescription> actual = config.getNotes();
 
         Assert.assertTrue("Invalid '-notes' options", valid);
@@ -330,23 +343,28 @@ public class ConfigTest {
      */
     @Test
     public void test_GetNotesPath_Invalid() {
-        boolean valid = config.applyOptions(new String[][]{{"-notes", "name-1", "a/b/c"},
-                                                           {"-notes", "name-2", "d/e/f"}}, reporter);
+        boolean valid = config.applyOptions(new String[][]{{"-note", "name-1", htmlNote},
+                                                           {"-note", "name-2", textNote},
+                                                           {"-note", "name-3", featureNote}}, reporter);
 
         Collection<NoteDescription> actual = config.getNotes();
 
-        Assert.assertFalse("Invalid '-notes' options", valid);
-        Assert.assertEquals("Unexpected note count", 2, actual.size());
+        Assert.assertTrue("Invalid '-notes' options", valid);
+        Assert.assertEquals("Unexpected note count", 3, actual.size());
 
         Iterator<NoteDescription> iterator = actual.iterator();
         NoteDescription desc = iterator.next();
 
         Assert.assertEquals("Unexpected notes name", "name-1", desc.getName());
-        Assert.assertEquals("Unexpected notes path", "a/b/c", desc.getPath());
+        Assert.assertEquals("Unexpected notes path", htmlNote, desc.getPath());
 
         desc = iterator.next();
         Assert.assertEquals("Unexpected notes name", "name-2", desc.getName());
-        Assert.assertEquals("Unexpected notes path", "d/e/f", desc.getPath());
+        Assert.assertEquals("Unexpected notes path", textNote, desc.getPath());
+
+        desc = iterator.next();
+        Assert.assertEquals("Unexpected notes name", "name-3", desc.getName());
+        Assert.assertEquals("Unexpected notes path", featureNote, desc.getPath());
     }
 
 
@@ -354,17 +372,57 @@ public class ConfigTest {
      * Unit test {@link Config#getNotes}
      */
     @Test
-    public void test_GetNotesPath_EmptyName() throws Exception {
-        boolean valid = config.applyOptions(new String[][]{{"-notes", "", "g/h/i"}}, reporter);
-        Collection<NoteDescription> actual = config.getNotes();
+    public void test_GetNotesPath_CheckNames()  {
+        Assert.assertFalse("Empty Name",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "", htmlNote}}, reporter));
+        Assert.assertTrue("Single character",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "X", htmlNote}}, reporter));
+        Assert.assertTrue("Multiple characters",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "XYZ", htmlNote}}, reporter));
+        Assert.assertTrue("Digits",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "123", htmlNote}}, reporter));
 
-        Assert.assertFalse("Invalid '-notes' options", valid);
-        Assert.assertEquals("Unexpected note count", 1, actual.size());
+        Assert.assertFalse("Starts with space",
+            Config.newInstance().applyOptions(new String[][]{{"-note", " index", htmlNote}}, reporter));
+        Assert.assertFalse("Ends with space",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index ", htmlNote}}, reporter));
+        Assert.assertTrue("Contains space",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index page", htmlNote}}, reporter));
 
-        NoteDescription desc = actual.iterator().next();
+        Assert.assertFalse("Starts with dot",
+            Config.newInstance().applyOptions(new String[][]{{"-note", ".index", htmlNote}}, reporter));
+        Assert.assertFalse("Ends with dot",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index.", htmlNote}}, reporter));
+        Assert.assertTrue("Contains _",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index.page", htmlNote}}, reporter));
 
-        Assert.assertEquals("Unexpected notes name", "", desc.getName());
-        Assert.assertEquals("Unexpected notes path", "g/h/i", desc.getPath());
+        Assert.assertFalse("Starts with _",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "_index", htmlNote}}, reporter));
+        Assert.assertFalse("Ends with _",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index_", htmlNote}}, reporter));
+        Assert.assertTrue("Contains _",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index_page", htmlNote}}, reporter));
+
+        Assert.assertFalse("Starts with -",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "-index", htmlNote}}, reporter));
+        Assert.assertFalse("Ends with -",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index-", htmlNote}}, reporter));
+        Assert.assertTrue("Contains -",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index-page", htmlNote}}, reporter));
+
+        Assert.assertFalse("Starts with *",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "*index", htmlNote}}, reporter));
+        Assert.assertFalse("Ends with *",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index*", htmlNote}}, reporter));
+        Assert.assertFalse("Contains *",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index*page", htmlNote}}, reporter));
+
+        Assert.assertFalse("Starts with ?",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "*index", htmlNote}}, reporter));
+        Assert.assertFalse("Ends with ?",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index*", htmlNote}}, reporter));
+        Assert.assertFalse("Contains ?",
+            Config.newInstance().applyOptions(new String[][]{{"-note", "index*page", htmlNote}}, reporter));
     }
 
 

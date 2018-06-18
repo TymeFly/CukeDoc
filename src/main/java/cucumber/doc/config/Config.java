@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +29,8 @@ import cucumber.doc.util.Trace;
  */
 public class Config {
     private static final EnumSet<Format> DEFAULT_FORMATS = EnumSet.of(Format.HTML, Format.BASIC);
+    private static final Pattern NOTE_NAME_FORMAT =
+        Pattern.compile("[A-Za-z0-9]+([A-Za-z0-9-_ .]*[A-Za-z0-9])?");
 
     private static Config instance = newInstance();
 
@@ -104,7 +107,7 @@ public class Config {
             count = 2;
         } else if ("-icon".equals(option)) {
             count = 2;
-        } else if ("-notes".equals(option)) {
+        } else if ("-note".equals(option)) {
             count = 3;
         } else if ("-trace".equals(option)) {
             trace = true;
@@ -177,10 +180,13 @@ public class Config {
             } else if ("-icon".equals(key)) {
                 iconPath = value1;
                 valid &= validatePath(key, value1, reporter);
-            } else if ("-notes".equals(key)) {
-                notes.add(new NoteDescription(value1, value2));
-                valid &= validateString(key, value1, reporter);
+            } else if ("-note".equals(key)) {
+                valid &= validateNoteName(value1, reporter);
                 valid &= validatePath(key, value2, reporter);
+
+                if (valid) {
+                    notes.add(new NoteDescription(value1, value2));
+                }
             } else {
                 // ignore unexpected argument - javaDoc may be using it;
             }
@@ -191,6 +197,17 @@ public class Config {
         Trace.message("Arguments are %s", (valid ? "valid" : "INVALID"));
 
         return valid;
+    }
+
+
+    private boolean validateNoteName(@Nonnull String value, @Nonnull DocErrorReporter reporter) {
+        boolean isValid = NOTE_NAME_FORMAT.matcher(value).matches();
+
+        if (!isValid) {
+            reporter.printError("Note description '" + value + "' has unexpected format");
+        }
+
+        return isValid;
     }
 
 
@@ -252,13 +269,13 @@ public class Config {
                 .withOptions("-icon")
                     .withArgument("path")
                     .withDescription("Browser window favicon for the documentation")
-                .withOptions("-notes")
+                .withOptions("-note")
                     .withArgument("name")
                     .withArgument("path")
-                    .withDescription("Optional set of notes that will be included in the report.")
+                    .withDescription("Optional set of note that will be included in the report.")
                     .withDescription("The types of file that can be used are:")
                     .withDescription("  " + StringUtils.asString(NoteFormat.values()).toLowerCase())
-                    .withDescription("Multiple sets of notes can be specified.")
+                    .withDescription("Multiple sets of note can be specified.")
                     .withDescription("Notes with the same name will be concatenated.")
                 .withOptions("-description")
                     .withArgument("path")

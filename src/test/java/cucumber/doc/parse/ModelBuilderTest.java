@@ -1,10 +1,6 @@
 package cucumber.doc.parse;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Iterator;
-
-import javax.annotation.Nonnull;
 
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.RootDoc;
@@ -16,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import test_helpers.Sample;
+import test_helpers.utils.TestFileHelper;
 
 import static org.mockito.Mockito.mock;
 
@@ -40,10 +37,10 @@ public class ModelBuilderTest {
     public void test_Build() throws Exception {
         RootDoc app = Sample.rootDoc();
 
-        config.applyOptions(new String[][]{{"-notes", "desc", findFile("notes/note.html")},
-                                           {"-notes", "desc", findFile("notes/note.txt")},
-                                           {"-notes", "name", findFile("sample/sample1.feature")},
-                                           {"-link", findFile("report/xml/sample.xml")}},
+        config.applyOptions(new String[][]{{"-note", "desc", TestFileHelper.findFile("note/note.html")},
+                                           {"-note", "desc", TestFileHelper.findFile("note/note.txt")},
+                                           {"-note", "name", TestFileHelper.findFile("sample/sample1.feature")},
+                                           {"-link", TestFileHelper.findFile("report/xml/sample.xml")}},
                             reporter);
 
         ApplicationModel actual = new ModelBuilder(app).build();
@@ -98,14 +95,5 @@ public class ModelBuilderTest {
         Assert.assertEquals("Unexpected mapping2", "Hello (\\d+)", actual.getMappings().get(1).getRegEx());
         Assert.assertEquals("Unexpected mapping3", "World (\\d+)", actual.getMappings().get(2).getRegEx());
         Assert.assertEquals("Unexpected mapping4", "mapping1", actual.getMappings().get(3).getRegEx());
-    }
-
-
-    @Nonnull
-    private String findFile(@Nonnull String fileName) throws Exception {
-        URL expectedLocation = getClass().getClassLoader().getResource(fileName);
-        String location = new File(expectedLocation.toURI()).getAbsolutePath();
-
-        return location;
     }
 }
