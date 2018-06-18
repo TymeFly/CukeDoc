@@ -110,14 +110,14 @@ public class ApplicationModelTest {
         notes = app3.getNotes().iterator();
         note = notes.next();
 
-        Assert.assertEquals("Unexpected app3 notes 1 name", "name-1", note.getName());
+        Assert.assertEquals("Unexpected app3 notes 1 name", "Name-1", note.getName());
         Assert.assertEquals("Unexpected app3 notes 1 format", NoteFormat.HTML, note.getFormat());
         Assert.assertEquals("Unexpected app3 notes 1 content", "b-note2\nd-note3", note.getText());
 
         note = notes.next();
 
         // Format as text because it's the lowest common denominator
-        Assert.assertEquals("Unexpected app3 notes 2 name", "name-2", note.getName());
+        Assert.assertEquals("Unexpected app3 notes 2 name", "Name-2", note.getName());
         Assert.assertEquals("Unexpected app3 notes 2 format", NoteFormat.TEXT, note.getFormat());
         Assert.assertEquals("Unexpected app3 notes 2 content", "c-note4\na-note3", note.getText());
     }

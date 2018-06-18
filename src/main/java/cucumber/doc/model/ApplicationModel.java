@@ -1,7 +1,6 @@
 package cucumber.doc.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -66,7 +65,7 @@ public class ApplicationModel {
 
     private final List<TypeModel> types;
     private final List<MappingModel> mappings;
-    private final Collection<NoteModel> notes;
+    private final List<NoteModel> notes;
 
 
     private ApplicationModel(@Nonnull Builder builder) {
@@ -95,21 +94,22 @@ public class ApplicationModel {
 
     @Nonnull
     private List<NoteModel> mergeNotes(@Nonnull List<NoteModel> notes) {
-        Map<String, NoteModel> compressedNotes = new TreeMap<>();
+        Map<String, NoteModel> compressedNotes = new TreeMap<>(new NoteNameComparator());
 
-        // merge Models with the same name
+        // merge Models with the same canonised name
         for (NoteModel note : notes) {
-            String name = note.getName();
-            NoteModel existing = compressedNotes.get(name);
+            String friendly = note.getFriendlyName();
+            String canonised = NameUtils.canonise(friendly);
+            NoteModel existing = compressedNotes.get(canonised);
 
             if (existing == null) {
-                compressedNotes.put(name, note);
+                compressedNotes.put(canonised, note);
             } else {
                 String combinedText = combineText(existing.getText(), note.getText());
                 NoteFormat combinedFormat = combineFormat(existing.getFormat(), note.getFormat());
-                NoteModel combined = new NoteModel(name, combinedText, combinedFormat);
+                NoteModel combined = new NoteModel(friendly, combinedText, combinedFormat);
 
-                compressedNotes.put(name, combined);
+                compressedNotes.put(canonised, combined);
             }
         }
 
@@ -164,11 +164,22 @@ public class ApplicationModel {
 
 
     /**
-     * Returns all of the notes applied to this application in the order they were added
-     * @return all of the notes applied to this application in the order they were added
+     * Returns all of the notes applied to this application in their natural order. The order is based on
+     * the name of the {@link NoteModel#friendlyName) with identically named notes merged in the order they were
+     * applied. The order is:
+     * <ul>
+     *  <li>Overview</li>
+     *  <li>Contents</li>
+     *  <li>Read Me</li>
+     *  <li><i>{@literal <alphabetical>}</i></li>
+     *  <li>TODO</li>
+     *  <li>Credits</li>
+     *  <li>Index</li>
+     * </ul>
+     * @return all of the notes applied to this application in their natural order
      */
     @Nonnull
-    public Collection<NoteModel> getNotes() {
+    public List<NoteModel> getNotes() {
         return notes;
     }
 }

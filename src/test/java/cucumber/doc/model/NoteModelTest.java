@@ -17,9 +17,9 @@ public class NoteModelTest {
     @Before
     public void setUp() {
         model1 = new NoteModel("name-1", "Hello", NoteFormat.TEXT);
-        model2 = new NoteModel("name-2", "World", NoteFormat.HTML);
-        model3 = new NoteModel("name-3", "Foo", NoteFormat.FEATURE);
-        model4 = new NoteModel("name-3", "Bar", NoteFormat.PROPERTIES);
+        model2 = new NoteModel("name2", "World", NoteFormat.HTML);
+        model3 = new NoteModel("nameThree", "Foo", NoteFormat.FEATURE);
+        model4 = new NoteModel("nameThree", "Bar", NoteFormat.PROPERTIES);
     }
 
 
@@ -29,9 +29,9 @@ public class NoteModelTest {
     @Test
     public void test_GetName() {
         Assert.assertEquals("Model1 unexpected name", "name-1", model1.getName());
-        Assert.assertEquals("Model2 unexpected name", "name-2", model2.getName());
-        Assert.assertEquals("Model3 unexpected name", "name-3", model3.getName());
-        Assert.assertEquals("Model4 unexpected name", "name-3", model4.getName());
+        Assert.assertEquals("Model2 unexpected name", "name2", model2.getName());
+        Assert.assertEquals("Model3 unexpected name", "nameThree", model3.getName());
+        Assert.assertEquals("Model4 unexpected name", "nameThree", model4.getName());
     }
 
 
@@ -56,5 +56,17 @@ public class NoteModelTest {
         Assert.assertEquals("Model2 unexpected text", NoteFormat.HTML, model2.getFormat());
         Assert.assertEquals("Model3 unexpected text", NoteFormat.FEATURE, model3.getFormat());
         Assert.assertEquals("Model4 unexpected text", NoteFormat.PROPERTIES, model4.getFormat());
+    }
+
+
+    /**
+     * Unit test {@link NoteModel#getFriendlyName}
+     */
+    @Test
+    public void test_friendlyName() {
+        Assert.assertEquals("Model1 unexpected text", "Name-1", model1.getFriendlyName());
+        Assert.assertEquals("Model2 unexpected text", "Name2", model2.getFriendlyName());
+        Assert.assertEquals("Model3 unexpected text", "Name Three", model3.getFriendlyName());
+        Assert.assertEquals("Model4 unexpected text", "Name Three", model4.getFriendlyName());
     }
 }

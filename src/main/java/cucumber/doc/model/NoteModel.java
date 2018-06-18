@@ -8,8 +8,8 @@ import cucumber.doc.util.NoteFormat;
  * Model for User defines notes
  */
 public class NoteModel {
-    @Nonnull
     private final String name;
+    private final String friendlyName;
     private final String text;
     private final NoteFormat format;
 
@@ -22,6 +22,7 @@ public class NoteModel {
      */
     public NoteModel(@Nonnull String name, @Nonnull String text, @Nonnull NoteFormat format) {
         this.name = name;
+        this.friendlyName = Friendly.name(name);
         this.text = text;
         this.format = format;
     }
@@ -34,6 +35,16 @@ public class NoteModel {
     @Nonnull
     public String getName() {
         return name;
+    }
+
+
+    /**
+     * Returns a friendly version of the note name
+     * @return a friendly version of the note name
+     */
+    @Nonnull
+    public String getFriendlyName() {
+        return friendlyName;
     }
 
 
