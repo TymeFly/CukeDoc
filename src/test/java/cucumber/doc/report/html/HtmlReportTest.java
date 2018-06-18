@@ -46,7 +46,7 @@ public class HtmlReportTest {
      */
     @Test
     public void test_WriteReport() throws Exception {
-        URL expectedFile = getClass().getClassLoader().getResource("report/html/index.html");
+        URL expectedFile = getClass().getClassLoader().getResource("report/html-full/index.html");
         String expected = new File(expectedFile.toURI()).getAbsoluteFile().getParent();
 
         ReportBuilder report = new HtmlReport(app);
