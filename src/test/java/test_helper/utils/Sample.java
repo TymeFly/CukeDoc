@@ -30,6 +30,10 @@ public class Sample {
     }
 
 
+    /**
+     * Returns a mocked sample of the JavaDoc parse tree
+     * @return a mocked sample of the JavaDoc parse tree
+     */
     @Nonnull
     public static RootDoc rootDoc() {
         RootDoc root = mock(RootDoc.class);
@@ -197,6 +201,10 @@ public class Sample {
     }
 
 
+    /**
+     * Returns a sample of a generated data model, complete with mappings, parameters, tables and notes
+     * @return a sample of a generated data model
+     */
     @Nonnull
     public static ApplicationModel app() {
         ApplicationModel app = new ApplicationModel.Builder()
@@ -221,10 +229,25 @@ public class Sample {
                                 .withDescription("Type Description. Is Here")
                                 .since("1.0.1")
                                 .build())
-                        .withNote(new NoteModel("name-1", "Note 1.1\nNote 1.2", NoteFormat.TEXT))
+                        .withNote(new NoteModel("TODO", "TODO 1.1\nTODO 1.2", NoteFormat.TEXT))
                         .withNote(new NoteModel("name-2", "Note 2", NoteFormat.HTML))
-                        .withNote(new NoteModel("name-1", "Note 3", NoteFormat.HTML))
+                        .withNote(new NoteModel("name-1", "Note 1", NoteFormat.FEATURE))
+                        .withNote(new NoteModel("To Do", "To Do 2.1", NoteFormat.HTML))
+
                         .build();
+
+        return app;
+    }
+
+
+    /**
+     * Returns an empty data model.
+     * @return an empty data model
+     */
+    @Nonnull
+    public static ApplicationModel emptyApp() {
+        ApplicationModel app = new ApplicationModel.Builder()
+                                .build();
 
         return app;
     }

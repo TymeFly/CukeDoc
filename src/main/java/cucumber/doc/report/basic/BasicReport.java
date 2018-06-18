@@ -98,7 +98,7 @@ public class BasicReport implements ReportBuilder {
                 builder.append(EOL);
 
                 if (notes.size() != 1) {
-                    String name = note.getName();
+                    String name = note.getFriendlyName();
 
                     builder.append(name)
                            .append(EOL)
