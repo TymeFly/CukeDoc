@@ -117,12 +117,20 @@
     </module>
     <module name="Translation"/>
     <module name="FileLength"/>
-    <module name="FileTabCharacter">                          <!--  Tabs are not allowed  -->
+    <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
     <module name="RegexpHeader">
         <property name="header" value="^package cucumber\.doc(\.[a-z0-9]+)*;$"/>
     </module>
+
+    <!-- This filter allows us to comment out false positives. Developer is required to provide a reason. -->
+    <module name="SuppressWithNearbyCommentFilter">
+        <property name="commentFormat" value="Suspend Checkstyle rule (\w+) for (\d+) lines: \w+"/>
+        <property name="checkFormat" value="$1"/>
+        <property name="influenceFormat" value="$2"/>
+    </module>
+
 </module>
 
 
