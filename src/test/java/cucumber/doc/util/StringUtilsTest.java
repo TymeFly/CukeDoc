@@ -11,6 +11,32 @@ import org.junit.Test;
  */
 public class StringUtilsTest {
     /**
+     * Unit test {@link StringUtils#trimLines}
+     */
+    @Test
+    public void test_TrimLines() {
+        // Pass through
+        Assert.assertEquals("Empty String", "", StringUtils.trimLines(""));
+        Assert.assertEquals("single line", "abc", StringUtils.trimLines("abc"));
+        Assert.assertEquals("single line with leading spaces", "  abc  ", StringUtils.trimLines("  abc  "));
+        Assert.assertEquals("single line with tabs", "\t\tabc\t\t", StringUtils.trimLines("\t\tabc\t\t"));
+        Assert.assertEquals("Multiple lines", "abc\ndef\nghi", StringUtils.trimLines("abc\ndef\nghi"));
+        Assert.assertEquals("Multiple lines leading spaces", " abc\ndef\nghi ", StringUtils.trimLines(" abc\ndef\nghi "));
+        Assert.assertEquals("Multiple lines leading tabs", "\tabc\ndef\nghi\t", StringUtils.trimLines("\tabc\ndef\nghi\t"));
+
+        // Trim single lines (start and end)
+        Assert.assertEquals("Trim Leading blank lines", "abc\ndef\nghi", StringUtils.trimLines("\nabc\ndef\nghi\n"));
+        Assert.assertEquals("Spaces in blank lines", " abc\ndef\nghi ", StringUtils.trimLines(" \n abc\ndef\nghi \n "));
+        Assert.assertEquals("Tabs in blank lines", " abc\ndef\nghi ", StringUtils.trimLines("\t\n abc\ndef\nghi \n\t"));
+
+        // Trim multiple lines (start and end)
+        Assert.assertEquals("Multiple trim Leading blank lines", "abc\ndef\nghi", StringUtils.trimLines("\n\nabc\ndef\nghi\n\n"));
+        Assert.assertEquals("Multiple spaces in blank lines", " abc\ndef\nghi ", StringUtils.trimLines(" \n \n abc\ndef\nghi \n \n "));
+        Assert.assertEquals("Multiple tabs in blank lines", " abc\ndef\nghi ", StringUtils.trimLines("\t\n\t\n abc\ndef\nghi \n\t\n\t"));
+    }
+
+
+    /**
      * Unit test {@link StringUtils#firstSentence}
      */
     @Test

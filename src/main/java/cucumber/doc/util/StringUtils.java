@@ -25,6 +25,18 @@ public class StringUtils {
 
 
     /**
+     * Remove all Leading and trailing lines that only contain white space characters
+     * @param text      Text to trim
+     * @return          The original string with the leading and trailing blank lines removed
+     */
+    @Nonnull
+    public static String trimLines(@Nonnull String text) {
+        return text.replaceAll("^(\\h*\\v)+", "")
+                   .replaceAll("(\\v\\h*)+$", "");
+    }
+
+
+    /**
      * Returns the first sentence in the {@code text}
      * @param text              Some text
      * @return                  The first sentence in the text
