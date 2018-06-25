@@ -26,6 +26,7 @@ import cucumber.doc.util.StringUtils;
 public class BasicReport implements ReportBuilder {
     private static final String EOL = System.lineSeparator();
     private static final String INDENT = "    ";
+    private static final String HORIZONTAL_LINE = "--------";
 
     private final ApplicationModel model;
 
@@ -89,12 +90,21 @@ public class BasicReport implements ReportBuilder {
     private void addNotes(@Nonnull StringBuilder builder) {
         String title = Translate.message(LanguageKey.NOTES_TITLE);
         Collection<NoteModel> notes = model.getNotes();
+        boolean first = true;
 
         if (!notes.isEmpty()) {
-            builder.append("--==| ").append(title).append(" |==--")
+            builder.append(INDENT).append(INDENT)
+                   .append("--==| ").append(title).append(" |==--")
                    .append(EOL);
 
             for (NoteModel note : notes) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(INDENT).append(INDENT)
+                           .append(HORIZONTAL_LINE);
+                }
+
                 builder.append(EOL);
 
                 if (notes.size() != 1) {
@@ -108,6 +118,7 @@ public class BasicReport implements ReportBuilder {
                 }
 
                 builder.append(note.getText())
+                       .append(EOL)
                        .append(EOL);
             }
         }
@@ -118,8 +129,8 @@ public class BasicReport implements ReportBuilder {
         Date buildDate = DateUtils.localDate();
         String message = Translate.message(LanguageKey.FOOTER_BUILD_STAMP, buildDate, buildDate);
 
-        builder.append(EOL)
-               .append("--------")
+        builder.append(INDENT).append(INDENT)
+               .append(HORIZONTAL_LINE)
                .append(EOL)
                .append(message)
                .append(EOL);

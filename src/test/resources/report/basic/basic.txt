@@ -8,18 +8,20 @@ Class2:
     Given 	mapping3-a
     And 	mapping3-b
 
---==| Notes |==--
+        --==| Notes |==--
 
 Name-1
 ~~~~~~
 
 Note 1
 
+        --------
 Name-2
 ~~~~~~
 
 Note 2
 
+        --------
 To Do
 ~~~~~
 
@@ -27,5 +29,5 @@ TODO 1.1
 TODO 1.2
 To Do 2.1
 
---------
+        --------
 Built on dd MMM yyyy at hh:mm
