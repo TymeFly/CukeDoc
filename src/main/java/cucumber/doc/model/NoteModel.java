@@ -3,6 +3,7 @@ package cucumber.doc.model;
 import javax.annotation.Nonnull;
 
 import cucumber.doc.util.NoteFormat;
+import cucumber.doc.util.StringUtils;
 
 /**
  * Model for User defines notes
@@ -23,7 +24,7 @@ public class NoteModel {
     public NoteModel(@Nonnull String name, @Nonnull String text, @Nonnull NoteFormat format) {
         this.name = name;
         this.friendlyName = Friendly.name(name);
-        this.text = text;
+        this.text = StringUtils.trimLines(text);
         this.format = format;
     }
 
