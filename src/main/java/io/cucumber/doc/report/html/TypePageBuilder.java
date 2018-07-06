@@ -98,7 +98,7 @@ class TypePageBuilder extends PageBuilder {
                 div(
                   h5(Translate.message(LanguageKey.GENERAL_DESCRIPTION)).withClass("elementSubtitle"),
                   span(
-                    rawHtml(HtmlUtils.cleanDescription(typeModel.getSummary()))
+                    rawHtml(HtmlUtils.cleanDescription(typeModel.getDescription()))
                   ).withClass("implementationDescription")
                 ).withClass("implementationElement")
               ).withClass("descriptionContainer")
