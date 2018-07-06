@@ -13,11 +13,11 @@ import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Tag;
 import com.sun.javadoc.Type;
-import cucumber.doc.model.ApplicationModel;
-import cucumber.doc.model.ImplementationModel;
-import cucumber.doc.model.NoteModel;
-import cucumber.doc.model.TypeModel;
-import cucumber.doc.util.NoteFormat;
+import io.cucumber.doc.model.ApplicationModel;
+import io.cucumber.doc.model.ImplementationModel;
+import io.cucumber.doc.model.NoteModel;
+import io.cucumber.doc.model.TypeModel;
+import io.cucumber.doc.util.NoteFormat;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

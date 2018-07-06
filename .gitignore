@@ -27,6 +27,7 @@ target/
 # Misc
 *.old
 *.rdr
+rdr.*
 *.log
 *.tmp
 tmp.*

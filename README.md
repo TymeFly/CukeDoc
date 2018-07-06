@@ -8,7 +8,7 @@ CukeDoc is a Doclet that can be used to describe a test harness in an easy to re
 Since CukeDoc is a Doclet it is launched through JavaDoc
 
 <pre>
-  javadoc -cp [application-classpath] -doclet cucumber.doc.Main -docletpath [location-of-cukedoc] -sourcepath [source] -subpackages [packages] [cukedoc-options]
+  javadoc -cp [application-classpath] -doclet io.cucumber.doc.Main -docletpath [location-of-cukedoc] -sourcepath [source] -subpackages [packages] [cukedoc-options]
 </pre>
 
 Where the <cukedoc-options> are any of the following:
