@@ -59,16 +59,16 @@ public class FriendlyTest {
 
 
     /**
-     * Unit test {@link Friendly#cleanNoncaptureGroups(String)}
+     * Unit test {@link Friendly#cleanNonCaptureGroups(String)}
      */
     @Test
-    public void test_cleanNoncaptureGroups() {
-        Assert.assertEquals("Empty String", "", Friendly.cleanNoncaptureGroups(""));
-        Assert.assertEquals("No Group", "My Mapping", Friendly.cleanNoncaptureGroups("My Mapping"));
-        Assert.assertEquals("One Group", "My (first) Mapping", Friendly.cleanNoncaptureGroups("My (?:first) Mapping"));
-        Assert.assertEquals("Two Groups", "My (first) Mapping (second)", Friendly.cleanNoncaptureGroups("My (?:first) Mapping (?:second)"));
-        Assert.assertEquals("Nested Groups", "xxx (out (in)) xxx", Friendly.cleanNoncaptureGroups("xxx (?:out (?:in)) xxx"));
-        Assert.assertEquals("Escaped", "My \\(?:first) Mapping", Friendly.cleanNoncaptureGroups("My \\(?:first) Mapping"));
+    public void test_cleanNonCaptureGroups() {
+        Assert.assertEquals("Empty String", "", Friendly.cleanNonCaptureGroups(""));
+        Assert.assertEquals("No Group", "My Mapping", Friendly.cleanNonCaptureGroups("My Mapping"));
+        Assert.assertEquals("One Group", "My (first) Mapping", Friendly.cleanNonCaptureGroups("My (?:first) Mapping"));
+        Assert.assertEquals("Two Groups", "My (first) Mapping (second)", Friendly.cleanNonCaptureGroups("My (?:first) Mapping (?:second)"));
+        Assert.assertEquals("Nested Groups", "xxx (out (in)) xxx", Friendly.cleanNonCaptureGroups("xxx (?:out (?:in)) xxx"));
+        Assert.assertEquals("Escaped", "My \\(?:first) Mapping", Friendly.cleanNonCaptureGroups("My \\(?:first) Mapping"));
     }
 
 
@@ -100,6 +100,9 @@ public class FriendlyTest {
         Assert.assertEquals("Single word", "(Hello?)", Friendly.cleanQuantifiers("(Hello)?", '?'));
         Assert.assertEquals("As First Char", "?abc", Friendly.cleanQuantifiers("?abc", '?'));
         Assert.assertEquals("Escaped", "a\\? b", Friendly.cleanQuantifiers("a\\? b", '?'));
+        Assert.assertEquals("Optional Parameter",
+                            "(<database>?) table Tab(s?) is empty",
+                            Friendly.cleanQuantifiers("<database>? table Tabs? is empty", '?'));
     }
 
 
@@ -176,6 +179,10 @@ public class FriendlyTest {
                             "The file(s?) <file-list> must be OK",
                             Friendly.mapping("^The files? (\".*?\"(?:(?:, ?| and )\".*?\")*) must be OK",
                                              Arrays.asList(new ParameterModel("file-list", "String", "", "name"))));
-
+        Assert.assertEquals("optional parameter",
+                            "(<database>?)tables <table-list> are empty",
+                            Friendly.mapping("^(\\w+ )?tables (\".*?\"(?:(?:, ?| and )\".*?\")*) are empty$",
+                                    Arrays.asList(new ParameterModel("database", "String", "", "db"),
+                                                  new ParameterModel("table-list", "String", "", "names"))));
     }
 }

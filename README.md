@@ -32,4 +32,6 @@ Where the <cukedoc-options> are any of the following:
 
 ## Libraries used
 
-Other than Java 8+, CukeDoc has just one external dependency. The HTML generator uses the excellent j2html (https://j2html.com/)
+Other than Java 8, CukeDoc has just one external dependency. The HTML generator uses the excellent j2html (https://j2html.com/)
+
+**Note:** In Java9 the Doclet API changed, which breaks this code.

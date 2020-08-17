@@ -128,7 +128,7 @@ class Friendly {
 
     /**
      * Clean up on mappings
-     * @param mapping         dirty mapping definition
+     * @param mapping       dirty mapping definition
      * @param parameters    parameter definitions for this mapping
      * @return              clean version of mapping
      */
@@ -141,13 +141,13 @@ class Friendly {
         friendly = StringUtils.trim(mapping, "^", "$");
         friendly = StringUtils.trimTail(friendly, "\\\\.?");
         friendly = substituteParameterNames(friendly, parameters);
-        friendly = cleanNoncaptureGroups(friendly);
+        friendly = cleanNonCaptureGroups(friendly);
         friendly = removeSpecialConstructs(friendly);
 
         /*
          * Not currently supported (would they ever be used?):
          *    X??, X*? X+?, X?+, X*+, X++, {n} {n,}, {n,m}, {n}? {n,}?, {n,m}?, {n}+ {n,}+, {n,m}+,
-         *    backreferences
+         *    backReferences
          */
 
         friendly = cleanAllQuantifiers(friendly);
@@ -191,13 +191,13 @@ class Friendly {
     // I expect few (if any) of these, so I'm not overly worried about string manipulation in a loop
     @Nonnull
     @VisibleForTesting
-    static String cleanNoncaptureGroups(@Nonnull String mapping) {
+    static String cleanNonCaptureGroups(@Nonnull String mapping) {
         int start = indexOf(mapping, "(?:");
 
         while (start != -1) {
             int end = indexOf(mapping, ")", start);
             if (end != -1) {                    // If this happens then the mapping is malformed
-                mapping = mapping.substring(0, start) + '(' + mapping.substring(start + 3, mapping.length());
+                mapping = mapping.substring(0, start) + '(' + mapping.substring(start + 3);
             }
 
             start = indexOf(mapping, "(?:", start);
@@ -216,7 +216,7 @@ class Friendly {
         while (start != -1) {
             int end = indexOf(mapping, ")", start);
             if (end != -1) {                    // If this happens then the mapping is malformed
-                mapping = mapping.substring(0, start) + mapping.substring(end + 1, mapping.length());
+                mapping = mapping.substring(0, start) + mapping.substring(end + 1);
             }
 
             start = indexOf(mapping, "(?", start);
@@ -244,18 +244,28 @@ class Friendly {
         int index = indexOf(mapping, search);
 
         while (index != -1) {
+            int previousPosition = index - 1;
+            char previous = (index == 0 ? 0 : mapping.charAt(previousPosition));
+
             if (index == 0) {
                 index++;
-            } else if ((index > 1) && mapping.charAt(index - 1) == ')' && (mapping.charAt(index - 2) == '\\')) {
+            } else if ((index > 1) && previous == ')' && (mapping.charAt(index - 2) == '\\')) {
                 mapping = mapping.substring(0, index - 2) +
                         "(\\)" + quantifier + ')' + mapping.substring(index + 1);
                 index += 3;
-            } else if (mapping.charAt(index - 1) == ')') {
-                mapping = mapping.substring(0, index - 1) + quantifier + ')' + mapping.substring(index + 1);
+            } else if (previous == ')') {
+                mapping = mapping.substring(0, previousPosition) + quantifier + ')' + mapping.substring(index + 1);
                 index++;
+            } else if (previous == '>') {
+                int startIndex = Math.max(mapping.lastIndexOf('<', previousPosition), 0);
+
+                mapping = mapping.substring(0, startIndex) +
+                          '(' + mapping.substring(startIndex, index) + quantifier + ')' +
+                          mapping.substring(index + 1);
+                index += 3;
             } else {
-                mapping = mapping.substring(0, index - 1) +
-                        '(' + mapping.charAt(index - 1) + quantifier + ')' + mapping.substring(index + 1);
+                mapping = mapping.substring(0, previousPosition) +
+                        '(' + previous + quantifier + ')' + mapping.substring(index + 1);
                 index += 3;
             }
 

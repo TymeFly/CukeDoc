@@ -33,13 +33,13 @@ public class TranslateTest {
      * Unit test {@link Translate#message(LanguageKey, Object...)}
      */
     @Test
-    public void test_Message_en_withArgumets() {
+    public void test_Message_en_withArguments() {
         Translate.setI18n(I18n.EN);
 
-        Date testDate = new Date(1262434215000L);
+        Date testDate = new Date(1265980200000L);
         String actual = Translate.message(LanguageKey.FOOTER_BUILD_STAMP, testDate, testDate);
 
-        Assert.assertEquals("Unexpected message", "Built on 02 January 2010 at 12:10", actual);
+        Assert.assertEquals("Unexpected message", "Built on 12 February 2010 at 13:10", actual);
     }
 
 
@@ -47,13 +47,13 @@ public class TranslateTest {
      * Unit test {@link Translate#message(LanguageKey, Object...)}
      */
     @Test
-    public void test_Message_us_withArgumets() {
+    public void test_Message_us_withArguments() {
         Translate.setI18n(I18n.EN_US);
 
-        Date testDate = new Date(1262434215000L);
+        Date testDate = new Date(1265980200000L);
         String actual = Translate.message(LanguageKey.FOOTER_BUILD_STAMP, testDate, testDate);
 
-        Assert.assertEquals("Unexpected message", "Built on 02 January 2010 at 12:10", actual);
+        Assert.assertEquals("Unexpected message", "Built on 12 February 2010 at 13:10", actual);
     }
 
 
@@ -74,12 +74,12 @@ public class TranslateTest {
      * Unit test {@link Translate#message(LanguageKey, Object...)}
      */
     @Test
-    public void test_Message_fr_withArgumets() {
+    public void test_Message_fr_withArguments() {
         Translate.setI18n(I18n.FR);
 
-        Date testDate = new Date(1262434215000L);
+        Date testDate = new Date(1265980200000L);
         String actual = Translate.message(LanguageKey.FOOTER_BUILD_STAMP, testDate, testDate);
 
-        Assert.assertEquals("Unexpected message", "Construit sur 02 January 2010 \u00e0 12:10", actual);
+        Assert.assertEquals("Unexpected message", "Construit sur 12 February 2010 \u00e0 13:10", actual);
     }
 }

@@ -23,7 +23,7 @@ public class TestFileHelper {
 
 
     @Nonnull
-    public static final String findFile(@Nonnull String fileName) throws Exception {
+    public static String findFile(@Nonnull String fileName) throws Exception {
         URL expectedLocation = TestFileHelper.class.getClassLoader().getResource(fileName);
 
         if (expectedLocation == null) {

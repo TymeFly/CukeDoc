@@ -233,7 +233,7 @@ public class RegExSplitterTest {
      * Unit test {@link RegExSplitter#getCaptureGroups()}
      */
     @Test
-    public void test_getCaptureGroups_CapturesInsideNoncapture() {
+    public void test_getCaptureGroups_CapturesInsideNonCapture() {
         RegExSplitter splitter = RegExSplitter.compile("abc (?:foo(a*) (b*)) def");
 
         Assert.assertEquals("Bad captures", Arrays.asList("a*", "b*"), splitter.getCaptureGroups());

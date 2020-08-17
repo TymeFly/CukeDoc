@@ -77,4 +77,9 @@ public class Test2 {
     @And("Mapping number 7")
     public void main7() {
     }
+
+
+    @Given("^(\\w+ )?tables? (\".*?\"(?:(?:, ?| and )\".*?\")*) (?:is|are) empty$")
+    public testComplex(@Nonnull String type, @Nonnull String names) {
+    }
 }
