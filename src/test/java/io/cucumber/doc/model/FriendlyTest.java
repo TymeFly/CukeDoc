@@ -184,5 +184,13 @@ public class FriendlyTest {
                             Friendly.mapping("^(\\w+ )?tables (\".*?\"(?:(?:, ?| and )\".*?\")*) are empty$",
                                     Arrays.asList(new ParameterModel("database", "String", "", "db"),
                                                   new ParameterModel("table-list", "String", "", "names"))));
+        Assert.assertEquals("Missing Parameters",
+                "Parameter1 = \"<data>\" parameter2 = \"<<missing-parameter>>\"",
+                Friendly.mapping("^Parameter1 = \"([^\"]*)\" parameter2 = \"([^\"]*)\"$",
+                        Arrays.asList(new ParameterModel("data", "String", "", "data"))));
+        Assert.assertEquals("Capture first word",
+                "<first> text",
+                Friendly.mapping("([^ ]*) text",
+                        Arrays.asList(new ParameterModel("first", "String", "", "first"))));
     }
 }

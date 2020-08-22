@@ -170,9 +170,9 @@ class Friendly {
             if (first) {
                 first = false;
             } else {
-                builder.append('<').
-                        append(iterator.hasNext() ? iterator.next().getFriendlyName() : "?")
-                        .append('>');
+                builder.append('<')
+                       .append(iterator.hasNext() ? iterator.next().getFriendlyName() : "<missing-parameter>")
+                       .append('>');
             }
 
             builder.append(section);
